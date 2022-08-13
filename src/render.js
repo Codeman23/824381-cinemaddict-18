@@ -1,7 +1,7 @@
 import { RenderPositions } from './const';
 
 /**
- * Helper function for generate markup
+ * Helper function for generating markup template
  * @param {*} template - markup temaplate
  * @returns - markup
  */
