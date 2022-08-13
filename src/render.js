@@ -1,19 +1,24 @@
-const RenderPosition = {
-  BEFOREBEGIN: 'beforebegin',
-  AFTERBEGIN: 'afterbegin',
-  BEFOREEND: 'beforeend',
-  AFTEREND: 'afterend',
-};
+import { RenderPositions } from './const';
 
+/**
+ * Helper function for generating markup template
+ * @param {*} template - markup temaplate
+ * @returns - markup
+ */
 const createElement = (template) => {
   const newElement = document.createElement('div');
   newElement.innerHTML = template;
-
   return newElement.firstElementChild;
 };
 
-const render = (component, container, place = RenderPosition.BEFOREEND) => {
+/**
+ * Helper function for rendering markup template
+ * @param {*} component - new markup
+ * @param {*} container - container for new markup
+ * @param {*} place - render method
+ */
+const render = (component, container, place = RenderPositions.BEFOREEND) => {
   container.insertAdjacentElement(place, component.getElement());
 };
 
-export {RenderPosition, createElement, render};
+export { createElement, render };
