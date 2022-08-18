@@ -21,4 +21,6 @@ const FilmsCounters = {
   EXTRA: 2,
 };
 
-export { RenderPositions, SectionHeadings, ExtraClassNames, FilmsCounters };
+const MAX_DESCRIPTION_LENGHT = 139;
+
+export { RenderPositions, SectionHeadings, ExtraClassNames, FilmsCounters, MAX_DESCRIPTION_LENGHT };
