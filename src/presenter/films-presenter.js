@@ -14,7 +14,6 @@ export default class FilmsPresenter {
     this.commentedListComponent = new FilmsListView(SectionHeadings.COMMENTED, ExtraClassNames.FILMS_LIST_EXTRA);
   }
 
-  //comments
   init = (filmsContainer, filmsModel) => {
     this.filmsContainer = filmsContainer;
     this.filmsModel = filmsModel;
@@ -42,7 +41,7 @@ export default class FilmsPresenter {
      */
     render(this.mainListComponent, this.filmsComponent.getElement());
     getFilmCards(
-      this.films.length,
+      FilmsCounters.MAIN,
       this.films,
       this.mainListComponent.getElement().querySelector('.films-list__container')
     );

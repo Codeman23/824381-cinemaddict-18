@@ -36,7 +36,7 @@ const DaysDuration = {
 };
 
 const DescriptionSentences = {
-  MIN: 2,
+  MIN: 1,
   MAX: 5,
 };
 
