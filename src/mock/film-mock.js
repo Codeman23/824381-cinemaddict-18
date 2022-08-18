@@ -15,16 +15,21 @@ import {
   Runtime,
   YearsDuration,
   DaysDuration,
+  DescriptionSentences,
   names,
   surNames,
   titles,
   posters,
   genres,
   countres,
-  description,
+  descriptions,
   NAMES_COUNT,
 } from '../mock/const-mock';
 
+/**
+ * Function that generate filmInfo properties
+ * @returns filmInfo properties for one film
+ */
 const generateFilmInfo = () => ({
   title: getRandomValueFromItems(titles),
   alternativeTitle: getRandomValueFromItems(titles),
@@ -49,9 +54,17 @@ const generateFilmInfo = () => ({
     { length: getRandomInteger(GenreCount.MIN, GenreCount.MAX) },
     () => `${getRandomValueFromItems(genres)}`
   ).join(', '),
-  description,
+  description: new Array(getRandomInteger(DescriptionSentences.MIN, DescriptionSentences.MAX))
+    .fill('')
+    .map(() => descriptions[getRandomInteger(DescriptionSentences.MIN, DescriptionSentences.MAX)])
+    .join(' '),
 });
 
+/**
+ * Function that generates films objects
+ * @param {*} filmsCounter - films amount
+ * @returns array of film objects
+ */
 const generateFilms = (filmsCounter = FilmsCounters.MAIN) => {
   const films = Array.from({ length: filmsCounter }, generateFilmInfo);
   let resultCommentsCount = 0;

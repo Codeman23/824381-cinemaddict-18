@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { getRandomInteger, getRandomValueFromItems, formatValueToDateAndTime } from '../util';
-import { DaysDuration, names, surNames, emotions, comment } from '../mock/const-mock';
+import { DaysDuration, names, surNames, emotions, comments } from '../mock/const-mock';
 
 /**
  * Function that generate one comment properties
@@ -8,7 +8,7 @@ import { DaysDuration, names, surNames, emotions, comment } from '../mock/const-
  */
 const generateComment = () => ({
   author: `${getRandomValueFromItems(names)} ${getRandomValueFromItems(surNames)}`,
-  comment,
+  comment: getRandomValueFromItems(comments),
   date: formatValueToDateAndTime(
     dayjs().subtract(getRandomInteger(DaysDuration.MIN, DaysDuration.MAX), 'date').toDate()
   ),

@@ -14,16 +14,20 @@ export default class FilmsPresenter {
     this.commentedListComponent = new FilmsListView(SectionHeadings.COMMENTED, ExtraClassNames.FILMS_LIST_EXTRA);
   }
 
-  init = (filmsContainer) => {
+  //comments
+  init = (filmsContainer, filmsModel) => {
     this.filmsContainer = filmsContainer;
+    this.filmsModel = filmsModel;
+    this.films = [...filmsModel.get()];
+
     /**
      * Function that render film cards
      * @param {*} counter - cards counter
      * @param {*} container - container for cards
      */
-    const getFilmCards = (counter, container) => {
+    const getFilmCards = (counter, films, container) => {
       for (let i = 0; i < counter; i++) {
-        render(new FilmCardView(), container);
+        render(new FilmCardView(films[i]), container);
       }
     };
 
@@ -37,19 +41,31 @@ export default class FilmsPresenter {
      * Render main films list
      */
     render(this.mainListComponent, this.filmsComponent.getElement());
-    getFilmCards(FilmsCounters.MAIN, this.mainListComponent.getElement().querySelector('.films-list__container'));
+    getFilmCards(
+      this.films.length,
+      this.films,
+      this.mainListComponent.getElement().querySelector('.films-list__container')
+    );
     render(new ButtonMoreView(), this.mainListComponent.getElement());
 
     /**
      * Render rated films list
      */
     render(this.ratedListComponent, this.filmsComponent.getElement());
-    getFilmCards(FilmsCounters.EXTRA, this.ratedListComponent.getElement().querySelector('.films-list__container'));
+    getFilmCards(
+      FilmsCounters.EXTRA,
+      this.films,
+      this.ratedListComponent.getElement().querySelector('.films-list__container')
+    );
 
     /**
      * Render commented films list
      */
     render(this.commentedListComponent, this.filmsComponent.getElement());
-    getFilmCards(FilmsCounters.EXTRA, this.commentedListComponent.getElement().querySelector('.films-list__container'));
+    getFilmCards(
+      FilmsCounters.EXTRA,
+      this.films,
+      this.commentedListComponent.getElement().querySelector('.films-list__container')
+    );
   };
 }

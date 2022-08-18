@@ -35,6 +35,11 @@ const DaysDuration = {
   MAX: 7,
 };
 
+const DescriptionSentences = {
+  MIN: 2,
+  MAX: 5,
+};
+
 const names = [
   'Robert',
   'Jack',
@@ -121,11 +126,15 @@ const countres = [
 
 const emotions = ['angry', 'puke', 'smile', 'sleeping'];
 
-const description =
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.';
+const descriptions = [
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+  'Cras aliquet varius magna, non porta ligula feugiat eget.',
+  'Fusce tristique felis at fermentum pharetra.',
+  'Aliquam id orci ut lectus varius viverra.',
+  'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.',
+];
 
-const comment =
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget.';
+const comments = ['Good cast and film', 'Not so good', 'Awesoooooome. Ahhh', 'Almost 3 hours? So long and boring'];
 
 export {
   NAMES_COUNT,
@@ -136,6 +145,7 @@ export {
   Runtime,
   YearsDuration,
   DaysDuration,
+  DescriptionSentences,
   names,
   surNames,
   titles,
@@ -143,6 +153,6 @@ export {
   genres,
   countres,
   emotions,
-  description,
-  comment,
+  descriptions,
+  comments,
 };
