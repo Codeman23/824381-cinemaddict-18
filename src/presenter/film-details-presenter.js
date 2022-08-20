@@ -7,32 +7,35 @@ import { RenderPositions } from '../const.js';
 import { render } from '../render.js';
 
 export default class FilmDetailsPresenter {
-  constructor() {
-    this.filmDetailsWrapper = new FilmDetailsView();
-  }
+  #filmDetailsWrapper = new FilmDetailsView();
+  #bodyContainer = null;
+  #filmsModel = null;
+  #commentsModel = null;
+  #films = null;
+  #comments = null;
 
   init = (bodyContainer, filmsModel, commentsModel) => {
-    this.bodyContainer = bodyContainer;
-    this.filmsModel = filmsModel;
-    this.commentsModel = commentsModel;
-    this.films = [...filmsModel.get()];
-    const comments = [...this.commentsModel.get(this.films[0])];
+    this.#bodyContainer = bodyContainer;
+    this.#filmsModel = filmsModel;
+    this.#commentsModel = commentsModel;
+    this.#films = [...this.#filmsModel.get()];
+    this.#comments = [...this.#commentsModel.get(this.#films[0])];
 
     /**
      * Render film details wrapper
      */
-    render(this.filmDetailsWrapper, this.bodyContainer, RenderPositions.AFTEREND);
+    render(this.#filmDetailsWrapper, this.#bodyContainer, RenderPositions.AFTEREND);
 
     /**
      * Render film details info and controls
      */
     render(
-      new FilmDetailsInfoView(this.films[0]),
-      this.filmDetailsWrapper.getElement().querySelector('.film-details__inner')
+      new FilmDetailsInfoView(this.#films[0]),
+      this.#filmDetailsWrapper.element.querySelector('.film-details__inner')
     );
     render(
-      new FilmDetailsControlsView(this.films[0]),
-      this.filmDetailsWrapper.getElement().querySelector('.film-details__info-wrap'),
+      new FilmDetailsControlsView(this.#films[0]),
+      this.#filmDetailsWrapper.element.querySelector('.film-details__info-wrap'),
       RenderPositions.AFTEREND
     );
 
@@ -40,12 +43,12 @@ export default class FilmDetailsPresenter {
      * Render film details comments and form
      */
     render(
-      new FilmDetailsCommentsView(comments),
-      this.filmDetailsWrapper.getElement().querySelector('.film-details__inner')
+      new FilmDetailsCommentsView(this.#comments),
+      this.#filmDetailsWrapper.element.querySelector('.film-details__inner')
     );
     render(
       new FilmDetailsFormView(),
-      this.filmDetailsWrapper.getElement().querySelector('.film-details__comments-wrap')
+      this.#filmDetailsWrapper.element.querySelector('.film-details__comments-wrap')
     );
   };
 }

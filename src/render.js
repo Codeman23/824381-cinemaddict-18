@@ -18,7 +18,7 @@ const createElement = (template) => {
  * @param {*} place - render method
  */
 const render = (component, container, place = RenderPositions.BEFOREEND) => {
-  container.insertAdjacentElement(place, component.getElement());
+  container.insertAdjacentElement(place, component.element);
 };
 
 export { createElement, render };
