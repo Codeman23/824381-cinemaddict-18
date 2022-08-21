@@ -17,24 +17,29 @@ const createFilmsListTemplate = (
     </section>`;
 
 export default class FilmsListView {
+  #element = null;
+  #heading = null;
+  #extraClassName = null;
+  #visualClassName = null;
+
   constructor(heading, extraClassName, visualClassName) {
-    this.heading = heading;
-    this.extraClassName = extraClassName;
-    this.visualClassName = visualClassName;
+    this.#heading = heading;
+    this.#extraClassName = extraClassName;
+    this.#visualClassName = visualClassName;
   }
 
-  getTemplate() {
-    return createFilmsListTemplate(this.heading, this.extraClassName, this.visualClassName);
+  get template() {
+    return createFilmsListTemplate(this.#heading, this.#extraClassName, this.#visualClassName);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
