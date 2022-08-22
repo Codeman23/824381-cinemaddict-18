@@ -106,17 +106,12 @@ export default class FilmsPresenter {
     }
   };
 
-  init = (filmsContainer, filmsModel, commentsModel) => {
-    this.#filmsContainer = filmsContainer;
-    this.#filmsModel = filmsModel;
-    this.#films = [...this.#filmsModel.get()];
-    this.#commentsModel = commentsModel;
-
+  #renderFilmsBoard() {
     /**
-     * Function that render film cards
-     * @param {*} counter - cards counter
-     * @param {*} container - container for cards
-     */
+    * Function that render film cards
+    * @param {*} counter - cards counter
+    * @param {*} container - container for cards
+    */
     const getFilmCards = (counter, films, container) => {
       for (let i = 0; i < counter; i++) {
         this.#renderFilmCard(films[i], container);
@@ -124,49 +119,67 @@ export default class FilmsPresenter {
     };
 
     /**
-    * Render films boards or empty board
+    * Render films lists wrappers
+    */
+    render(this.#filmsComponent, this.#filmsContainer);
+    render(this.#mainListComponent, this.#filmsComponent.element);
+
+    /**
+    * Render films board or empty board
     */
     if (this.#films.length === 0) {
       render(new FilmsListEmptyView() , this.#mainListComponent.element);
     } else {
       /**
-      * Render sort menu and films lists wrapper
+      * Render sort menu
       */
       render(new SortView(), this.#filmsContainer);
-      render(this.#filmsComponent, this.#filmsContainer);
+
       /**
       * Render main films list
       */
-      render(this.#mainListComponent, this.#filmsComponent.element);
       getFilmCards(
         Math.min(this.#films.length, this.#renderFilmCount ),
         this.#films,
         this.#mainListComponent.element.querySelector('.films-list__container')
       );
 
+      /**
+      * Render load-more-button
+      */
       if (this.#films.length > this.#renderFilmCount) {
         render(this.#loadMoreButtonComponent , this.#mainListComponent.element);
         this.#loadMoreButtonComponent.element.addEventListener('click', this.#onMoreButtonClick);
       }
-    }
 
-
-    /**
-    * Render rated and commented films list
-    */
-    if(this.#films.length >= FilmsCounters.EXTRA ) {
-      render(this.#ratedListComponent, this.#filmsComponent.element);
-      getFilmCards(
-        FilmsCounters.EXTRA,
-        this.#films,
-        this.#ratedListComponent.element.querySelector('.films-list__container')
-      );
-      render(this.#commentedListComponent, this.#filmsComponent.element);
-      getFilmCards(
-        FilmsCounters.EXTRA,
-        this.#films,
-        this.#commentedListComponent.element.querySelector('.films-list__container')
-      );
+      /**
+      * Render rated and commented films list
+      */
+      if(this.#films.length >= FilmsCounters.EXTRA ) {
+        render(this.#ratedListComponent, this.#filmsComponent.element);
+        getFilmCards(
+          FilmsCounters.EXTRA,
+          this.#films,
+          this.#ratedListComponent.element.querySelector('.films-list__container')
+        );
+        render(this.#commentedListComponent, this.#filmsComponent.element);
+        getFilmCards(
+          FilmsCounters.EXTRA,
+          this.#films,
+          this.#commentedListComponent.element.querySelector('.films-list__container')
+        );
+      }
     }
+  }
+
+  constructor (filmsContainer, filmsModel, commentsModel) {
+    this.#filmsContainer = filmsContainer;
+    this.#filmsModel = filmsModel;
+    this.#commentsModel = commentsModel;
+  }
+
+  init = () => {
+    this.#films = [...this.#filmsModel.get()];
+    this.#renderFilmsBoard();
   };
 }
