@@ -108,10 +108,11 @@ export default class FilmsPresenter {
 
   #renderFilmsBoard() {
     /**
-    * Function that render film cards
-    * @param {*} counter - cards counter
-    * @param {*} container - container for cards
-    */
+     * Function that render film cards
+     * @param {*} counter - cards counter
+     * @param {*} films - films data
+     * @param {*} container - container for cards
+     */
     const getFilmCards = (counter, films, container) => {
       for (let i = 0; i < counter; i++) {
         this.#renderFilmCard(films[i], container);
