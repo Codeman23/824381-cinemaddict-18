@@ -40,6 +40,11 @@ const DescriptionSentences = {
   MAX: 5,
 };
 
+const FilmsCount = {
+  MIN: 15,
+  MAX: 20,
+};
+
 const names = [
   'Robert',
   'Jack',
@@ -136,9 +141,11 @@ const descriptions = [
 
 const comments = ['Good cast and film', 'Not so good', 'Awesoooooome. Ahhh', 'Almost 3 hours? So long and boring'];
 
+
 export {
   NAMES_COUNT,
   MAX_FILM_COMMENTS,
+  FilmsCount,
   GenreCount,
   Rating,
   AgeRating,
