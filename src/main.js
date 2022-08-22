@@ -13,9 +13,9 @@ const bodyElement = document.querySelector('body');
 const headerElement = bodyElement.querySelector('.header');
 const mainElement = bodyElement.querySelector('.main');
 const footerStatisticsElement = bodyElement.querySelector('.footer__statistics');
-const filmsPresenter = new FilmsPresenter();
 const filmsModel = new FilmsModel();
 const commentsModel = new CommentsModel(filmsModel);
+const filmsPresenter = new FilmsPresenter(mainElement, filmsModel, commentsModel);
 
 /**
  * Render markup
@@ -27,4 +27,4 @@ render(new FooterStatistics(), footerStatisticsElement);
 /**
  * Presenters
  */
-filmsPresenter.init(mainElement, filmsModel, commentsModel);
+filmsPresenter.init();

@@ -4,6 +4,7 @@ import FilmsListView from '../view/films-list-view.js';
 import FilmCardView from '../view/film-card-view.js';
 import ButtonMoreView from '../view/button-more-view.js';
 import FilmDetailsView from '../view/film-details-view.js';
+import FilmsListEmptyView from '../view/films-list-empty-view.js';
 import FilmDetailsInfoView from '../view/film-details-info-view.js';
 import FilmDetailsControlsView from '../view/film-details-controls-view.js';
 import FilmDetailsCommentsView from '../view/film-details-comments-view.js';
@@ -16,11 +17,13 @@ export default class FilmsPresenter {
   #mainListComponent = new FilmsListView(SectionHeadings.ALL_MOVIES, '', ExtraClassNames.VISUALLY_HIDDEN);
   #ratedListComponent = new FilmsListView(SectionHeadings.RATED, ExtraClassNames.FILMS_LIST_EXTRA);
   #commentedListComponent = new FilmsListView(SectionHeadings.COMMENTED, ExtraClassNames.FILMS_LIST_EXTRA);
+  #loadMoreButtonComponent = new ButtonMoreView();
   #filmsContainer = null;
   #filmsModel = null;
   #commentsModel = null;
   #filmDetailsWrapper = null;
   #films = [];
+  #renderFilmCount = FilmsCounters.MAIN;
 
   #renderFilmCard (film, container) {
     const filmCardComponent = new FilmCardView(film);
@@ -78,7 +81,7 @@ export default class FilmsPresenter {
 
   #removeFilmDetailsComponent(){
     this.#filmDetailsWrapper.element.remove();
-    this.#filmDetailsWrapper = null;
+    this.#filmDetailsWrapper.removeElement();
     document.body.classList.remove('hide-overflow');
     document.removeEventListener('keydown', this.#onEscapeKey);
   }
@@ -91,15 +94,23 @@ export default class FilmsPresenter {
     }
   };
 
-  init = (filmsContainer, filmsModel, commentsModel) => {
-    this.#filmsContainer = filmsContainer;
-    this.#filmsModel = filmsModel;
-    this.#films = [...this.#filmsModel.get()];
-    this.#commentsModel = commentsModel;
+  #onMoreButtonClick = (evt) => {
+    evt.preventDefault();
+    this.#films.slice(this.#renderFilmCount, this.#renderFilmCount + FilmsCounters.MAIN).forEach((film)=> this.#renderFilmCard(film, this.#mainListComponent.element.querySelector('.films-list__container')));
 
+    this.#renderFilmCount += FilmsCounters.MAIN;
+
+    if(this.#renderFilmCount >= this.#films.length) {
+      this.#loadMoreButtonComponent.element.remove();
+      this.#loadMoreButtonComponent.removeElement();
+    }
+  };
+
+  #renderFilmsBoard() {
     /**
      * Function that render film cards
      * @param {*} counter - cards counter
+     * @param {*} films - films data
      * @param {*} container - container for cards
      */
     const getFilmCards = (counter, films, container) => {
@@ -109,40 +120,67 @@ export default class FilmsPresenter {
     };
 
     /**
-     * Render sort menu and films lists wrapper
-     */
-    render(new SortView(), this.#filmsContainer);
+    * Render films lists wrappers
+    */
     render(this.#filmsComponent, this.#filmsContainer);
-
-    /**
-     * Render main films list
-     */
     render(this.#mainListComponent, this.#filmsComponent.element);
-    getFilmCards(
-      FilmsCounters.MAIN,
-      this.#films,
-      this.#mainListComponent.element.querySelector('.films-list__container')
-    );
-    render(new ButtonMoreView(), this.#mainListComponent.element);
 
     /**
-     * Render rated films list
-     */
-    render(this.#ratedListComponent, this.#filmsComponent.element);
-    getFilmCards(
-      FilmsCounters.EXTRA,
-      this.#films,
-      this.#ratedListComponent.element.querySelector('.films-list__container')
-    );
+    * Render films board or empty board
+    */
+    if (this.#films.length === 0) {
+      render(new FilmsListEmptyView() , this.#mainListComponent.element);
+    } else {
+      /**
+      * Render sort menu
+      */
+      render(new SortView(), this.#filmsContainer);
 
-    /**
-     * Render commented films list
-     */
-    render(this.#commentedListComponent, this.#filmsComponent.element);
-    getFilmCards(
-      FilmsCounters.EXTRA,
-      this.#films,
-      this.#commentedListComponent.element.querySelector('.films-list__container')
-    );
+      /**
+      * Render main films list
+      */
+      getFilmCards(
+        Math.min(this.#films.length, this.#renderFilmCount ),
+        this.#films,
+        this.#mainListComponent.element.querySelector('.films-list__container')
+      );
+
+      /**
+      * Render load-more-button
+      */
+      if (this.#films.length > this.#renderFilmCount) {
+        render(this.#loadMoreButtonComponent , this.#mainListComponent.element);
+        this.#loadMoreButtonComponent.element.addEventListener('click', this.#onMoreButtonClick);
+      }
+
+      /**
+      * Render rated and commented films list
+      */
+      if(this.#films.length >= FilmsCounters.EXTRA ) {
+        render(this.#ratedListComponent, this.#filmsComponent.element);
+        getFilmCards(
+          FilmsCounters.EXTRA,
+          this.#films,
+          this.#ratedListComponent.element.querySelector('.films-list__container')
+        );
+        render(this.#commentedListComponent, this.#filmsComponent.element);
+        getFilmCards(
+          FilmsCounters.EXTRA,
+          this.#films,
+          this.#commentedListComponent.element.querySelector('.films-list__container')
+        );
+      }
+    }
+  }
+
+  constructor (filmsContainer, filmsModel, commentsModel) {
+    this.#filmsContainer = filmsContainer;
+    this.#filmsModel = filmsModel;
+    this.#commentsModel = commentsModel;
+  }
+
+  init = () => {
+    this.#films = [...this.#filmsModel.get()];
+    this.#renderFilmsBoard();
   };
 }

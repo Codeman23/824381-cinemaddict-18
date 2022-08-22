@@ -6,9 +6,9 @@ import {
   formatValueToDateAndTime,
   formatMinutesToHoursAndMinutes,
 } from '../util';
-import { FilmsCounters } from '../const';
 import {
   MAX_FILM_COMMENTS,
+  FilmsCount,
   GenreCount,
   Rating,
   AgeRating,
@@ -65,7 +65,7 @@ const generateFilmInfo = () => ({
  * @param {*} filmsCounter - films amount
  * @returns array of film objects
  */
-const generateFilms = (filmsCounter = FilmsCounters.MAIN) => {
+const generateFilms = (filmsCounter = getRandomInteger(FilmsCount.MIN, FilmsCount.MAX)) => {
   const films = Array.from({ length: filmsCounter }, generateFilmInfo);
   let resultCommentsCount = 0;
 
