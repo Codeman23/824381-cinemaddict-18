@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 /**
  * Function for film list sections
@@ -16,13 +16,13 @@ const createFilmsListTemplate = (
       <div class="films-list__container"></div>
     </section>`;
 
-export default class FilmsListView {
-  #element = null;
+export default class FilmsListView extends AbstractView {
   #heading = null;
   #extraClassName = null;
   #visualClassName = null;
 
   constructor(heading, extraClassName, visualClassName) {
+    super();
     this.#heading = heading;
     this.#extraClassName = extraClassName;
     this.#visualClassName = visualClassName;
@@ -30,16 +30,5 @@ export default class FilmsListView {
 
   get template() {
     return createFilmsListTemplate(this.#heading, this.#extraClassName, this.#visualClassName);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

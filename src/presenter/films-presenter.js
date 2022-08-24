@@ -120,21 +120,19 @@ export default class FilmsPresenter {
     };
 
     /**
-    * Render films lists wrappers
-    */
-    render(this.#filmsComponent, this.#filmsContainer);
-    render(this.#mainListComponent, this.#filmsComponent.element);
-
-    /**
     * Render films board or empty board
     */
     if (this.#films.length === 0) {
+      render(this.#filmsComponent, this.#filmsContainer);
+      render(this.#mainListComponent, this.#filmsComponent.element);
       render(new FilmsListEmptyView() , this.#mainListComponent.element);
     } else {
       /**
       * Render sort menu
       */
       render(new SortView(), this.#filmsContainer);
+      render(this.#filmsComponent, this.#filmsContainer);
+      render(this.#mainListComponent, this.#filmsComponent.element);
 
       /**
       * Render main films list

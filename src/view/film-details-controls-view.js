@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createFilmDetailsControls = (film) => {
   /**
@@ -18,27 +18,15 @@ const createFilmDetailsControls = (film) => {
   </section>`;
 };
 
-export default class FilmDetailsControlsView {
-  #element = null;
+export default class FilmDetailsControlsView extends AbstractView {
   #film = null;
 
   constructor(film) {
+    super();
     this.#film = film;
   }
 
   get template() {
     return createFilmDetailsControls(this.#film);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
