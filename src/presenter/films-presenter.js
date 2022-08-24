@@ -124,8 +124,7 @@ export default class FilmsPresenter {
     */
     if (this.#films.length === 0) {
       render(this.#filmsComponent, this.#filmsContainer);
-      render(this.#mainListComponent, this.#filmsComponent.element);
-      render(new FilmsListEmptyView() , this.#mainListComponent.element);
+      render(new FilmsListEmptyView() , this.#filmsComponent.element);
     } else {
       /**
       * Render sort menu
