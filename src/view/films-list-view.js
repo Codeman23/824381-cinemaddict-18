@@ -11,10 +11,7 @@ const createFilmsListTemplate = (
   headingText,
   extraClassName,
   visualClassName
-) => `<section class="films-list ${extraClassName}">
-      <h2 class="films-list__title ${visualClassName}">${headingText}</h2>
-      <div class="films-list__container"></div>
-    </section>`;
+) => `<section class="films-list ${extraClassName}"><h2 class="films-list__title ${visualClassName}">${headingText}</h2></section>`;
 
 export default class FilmsListView extends AbstractView {
   #heading = null;

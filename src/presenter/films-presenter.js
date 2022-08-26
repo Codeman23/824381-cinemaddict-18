@@ -1,6 +1,7 @@
 import FilmsView from '../view/films-view.js';
 import SortView from '../view/sort-view.js';
 import FilmsListView from '../view/films-list-view.js';
+import FilmsListContainerView from '../view/films-list-container-view.js';
 import FilmCardView from '../view/film-card-view.js';
 import ButtonMoreView from '../view/button-more-view.js';
 import FilmDetailsView from '../view/film-details-view.js';
@@ -17,12 +18,16 @@ export default class FilmsPresenter {
   #mainListComponent = new FilmsListView(SectionHeadings.ALL_MOVIES, '', ExtraClassNames.VISUALLY_HIDDEN);
   #ratedListComponent = new FilmsListView(SectionHeadings.RATED, ExtraClassNames.FILMS_LIST_EXTRA);
   #commentedListComponent = new FilmsListView(SectionHeadings.COMMENTED, ExtraClassNames.FILMS_LIST_EXTRA);
+  #mainListContainerComponent = new FilmsListContainerView();
+  #ratedListContainerComponent = new FilmsListContainerView();
+  #commentedListContainerComponent = new FilmsListContainerView();
   #loadMoreButtonComponent = new ButtonMoreView();
   #filmsContainer = null;
   #filmsModel = null;
   #commentsModel = null;
   #filmDetailsWrapper = null;
   #filmDetailsInfoComponent = null;
+  #filmDetailsCommentsComponent = null;
   #filmCardComponent = null;
   #films = [];
   #renderFilmCount = FilmsCounters.MAIN;
@@ -53,31 +58,32 @@ export default class FilmsPresenter {
 
     this.#filmDetailsWrapper = new FilmDetailsView();
     this.#filmDetailsInfoComponent = new FilmDetailsInfoView(film);
+    this.#filmDetailsCommentsComponent = new FilmDetailsCommentsView(comments);
 
     /**
      * Render film details
      */
-    render(this.#filmDetailsWrapper, this.#filmsComponent.element.closest('.main'), RenderPosition.AFTEREND);
+    render(this.#filmDetailsWrapper, this.#filmsContainer.parentElement, RenderPosition.AFTEREND);
 
     render(
       this.#filmDetailsInfoComponent,
-      this.#filmDetailsWrapper.element.querySelector('.film-details__inner')
+      this.#filmDetailsWrapper.element.firstChild
     );
 
     render(
       new FilmDetailsControlsView(film),
-      this.#filmDetailsWrapper.element.querySelector('.film-details__info-wrap'),
+      this.#filmDetailsInfoComponent.element,
       RenderPosition.AFTEREND
     );
 
     render(
-      new FilmDetailsCommentsView(comments),
-      this.#filmDetailsWrapper.element.querySelector('.film-details__inner')
+      this.#filmDetailsCommentsComponent,
+      this.#filmDetailsWrapper.element.firstChild
     );
 
     render(
       new FilmDetailsFormView(),
-      this.#filmDetailsWrapper.element.querySelector('.film-details__comments-wrap')
+      this.#filmDetailsCommentsComponent.element.firstChild
     );
 
     /**
@@ -105,7 +111,7 @@ export default class FilmsPresenter {
   };
 
   #onMoreButtonClick = () => {
-    this.#films.slice(this.#renderFilmCount, this.#renderFilmCount + FilmsCounters.MAIN).forEach((film)=> this.#renderFilmCard(film, this.#mainListComponent.element.querySelector('.films-list__container')));
+    this.#films.slice(this.#renderFilmCount, this.#renderFilmCount + FilmsCounters.MAIN).forEach((film)=> this.#renderFilmCard(film, this.#mainListContainerComponent.element));
 
     this.#renderFilmCount += FilmsCounters.MAIN;
 
@@ -145,12 +151,12 @@ export default class FilmsPresenter {
       /**
       * Render main films list
       */
+      render(this.#mainListContainerComponent, this.#mainListComponent.element);
       getFilmCards(
         Math.min(this.#films.length, this.#renderFilmCount ),
         this.#films,
-        this.#mainListComponent.element.querySelector('.films-list__container')
+        this.#mainListContainerComponent.element
       );
-
       /**
       * Render load-more-button
       */
@@ -164,16 +170,18 @@ export default class FilmsPresenter {
       */
       if(this.#films.length >= FilmsCounters.EXTRA ) {
         render(this.#ratedListComponent, this.#filmsComponent.element);
+        render(this.#ratedListContainerComponent, this.#ratedListComponent.element);
         getFilmCards(
           FilmsCounters.EXTRA,
           this.#films,
-          this.#ratedListComponent.element.querySelector('.films-list__container')
+          this.#ratedListContainerComponent.element
         );
         render(this.#commentedListComponent, this.#filmsComponent.element);
+        render(this.#commentedListContainerComponent, this.#commentedListComponent.element);
         getFilmCards(
           FilmsCounters.EXTRA,
           this.#films,
-          this.#commentedListComponent.element.querySelector('.films-list__container')
+          this.#commentedListContainerComponent.element
         );
       }
     }
