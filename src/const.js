@@ -1,10 +1,3 @@
-const RenderPositions = {
-  BEFOREBEGIN: 'beforebegin',
-  AFTERBEGIN: 'afterbegin',
-  BEFOREEND: 'beforeend',
-  AFTEREND: 'afterend',
-};
-
 const SectionHeadings = {
   ALL_MOVIES: 'All movies. Upcoming',
   RATED: 'Top rated',
@@ -23,4 +16,4 @@ const FilmsCounters = {
 
 const MAX_DESCRIPTION_LENGHT = 139;
 
-export { RenderPositions, SectionHeadings, ExtraClassNames, FilmsCounters, MAX_DESCRIPTION_LENGHT };
+export { SectionHeadings, ExtraClassNames, FilmsCounters, MAX_DESCRIPTION_LENGHT };
