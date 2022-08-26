@@ -6,4 +6,14 @@ export default class ButtonMoreView extends AbstractView{
   get template() {
     return createButtonMoreTemplate();
   }
+
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.addEventListener('click', this.#clickHandler);
+  };
+
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  };
 }
