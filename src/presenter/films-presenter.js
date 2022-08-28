@@ -122,6 +122,9 @@ export default class FilmsPresenter {
   };
 
   #renderFilmsBoard() {
+    const topRatedFilms = [...this.#films].sort((a, b) => a.filmInfo.totalRating < b.filmInfo.totalRating);
+    const mostCommentedFilms = [...this.#films].sort((a, b) => a.comments.length < b.comments.length);
+
     /**
      * Function that render film cards
      * @param {*} counter - cards counter
@@ -173,14 +176,14 @@ export default class FilmsPresenter {
         render(this.#ratedListContainerComponent, this.#ratedListComponent.element);
         getFilmCards(
           FilmsCounters.EXTRA,
-          this.#films,
+          topRatedFilms,
           this.#ratedListContainerComponent.element
         );
         render(this.#commentedListComponent, this.#filmsComponent.element);
         render(this.#commentedListContainerComponent, this.#commentedListComponent.element);
         getFilmCards(
           FilmsCounters.EXTRA,
-          this.#films,
+          mostCommentedFilms,
           this.#commentedListContainerComponent.element
         );
       }

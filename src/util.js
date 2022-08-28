@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import {FilterTypes} from './const.js';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -53,6 +54,15 @@ const formatValueToYear = (date) => dayjs(date).format('YYYY');
  */
 const formatMinutesToHoursAndMinutes = (minutes) => dayjs.duration(minutes, 'minutes').format('H[h] mm[m]');
 
+/**
+ * Filter navigation counters
+ */
+const filters = {
+  [FilterTypes.WATCHLIST] : (items) => items.filter((item) => item.watchlist === true),
+  [FilterTypes.HISTORY] : (items) => items.filter((item) => item.alreadyWatched === true),
+  [FilterTypes.FAVORITE] : (items) => items.filter((item) => item.favorite === true),
+};
+
 export {
   getRandomInteger,
   getRandomValueFromItems,
@@ -60,4 +70,5 @@ export {
   formatValueToDate,
   formatValueToYear,
   formatMinutesToHoursAndMinutes,
+  filters
 };
