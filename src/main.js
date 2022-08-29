@@ -21,8 +21,8 @@ const filmsPresenter = new FilmsPresenter(mainElement, filmsModel, commentsModel
  * Render markup
  */
 render(new HeaderProfileView(), headerElement);
-render(new FilterView(), mainElement);
-render(new FooterStatistics(), footerStatisticsElement);
+render(new FilterView(filmsModel), mainElement);
+render(new FooterStatistics(filmsModel), footerStatisticsElement);
 
 /**
  * Presenters

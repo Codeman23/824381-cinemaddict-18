@@ -16,4 +16,10 @@ const FilmsCounters = {
 
 const MAX_DESCRIPTION_LENGHT = 139;
 
-export { SectionHeadings, ExtraClassNames, FilmsCounters, MAX_DESCRIPTION_LENGHT };
+const FilterTypes = {
+  WATCHLIST: 'Watchlist',
+  HISTORY: 'History',
+  FAVORITE: 'Favorite',
+};
+
+export { SectionHeadings, ExtraClassNames, FilmsCounters, FilterTypes, MAX_DESCRIPTION_LENGHT };
