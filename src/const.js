@@ -22,4 +22,9 @@ const FilterTypes = {
   FAVORITE: 'Favorite',
 };
 
-export { SectionHeadings, ExtraClassNames, FilmsCounters, FilterTypes, MAX_DESCRIPTION_LENGHT };
+const FilmMode = {
+  DEFAULT: 'Default',
+  POPUP: 'Popup',
+};
+
+export { SectionHeadings, ExtraClassNames, FilmsCounters, FilterTypes, MAX_DESCRIPTION_LENGHT, FilmMode };

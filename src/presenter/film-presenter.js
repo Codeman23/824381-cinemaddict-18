@@ -1,71 +1,100 @@
 import FilmCardView from '../view/film-card-view.js';
 import FilmDetailsView from '../view/film-details-view.js';
-import FilmDetailsInfoView from '../view/film-details-info-view.js';
-import FilmDetailsControlsView from '../view/film-details-controls-view.js';
-import FilmDetailsCommentsView from '../view/film-details-comments-view.js';
-import FilmDetailsFormView from '../view/film-details-form-view.js';
-import { render, RenderPosition } from '../framework/render.js';
+import { render, replace, remove, RenderPosition} from '../framework/render.js';
+import { FilmMode } from '../const.js';
 
 export default class FilmPresenter {
   #container = null;
   #mainContainer = null;
   #commentsModel = null;
-  #filmDetailsWrapper = null;
-  #filmDetailsInfoComponent = null;
-  #filmDetailsCommentsComponent = null;
+  #comments = null;
+  #filmDetailsComponent = null;
   #filmCardComponent = null;
-  constructor (container) {
-    this.#container = container;
-  }
+  #film = null;
+  #changeData = null;
+  #changeMode = null;
+  #mode = FilmMode.DEFAULT;
 
-  init = (film, filmsContainer, commentsModel) => {
+  constructor (container, filmsContainer, commentsModel, changeData, changeMode) {
+    this.#container = container;
     this.#mainContainer = filmsContainer;
     this.#commentsModel = commentsModel;
+    this.#changeData = changeData;
+    this.#changeMode = changeMode;
+  }
+
+  init = (film) => {
+    this.#film = film;
+
+    const prevFilmCardComponent = this.#filmCardComponent;
+    const prevFilmDetailsComponent = this.#filmDetailsComponent;
+
+    this.#comments = [...this.#commentsModel.get(film)];
     this.#filmCardComponent = new FilmCardView(film);
-    this.#filmCardComponent.setOpenPopupButtonClickHandler(this.#renderFilmDetails, film);
-    render(this.#filmCardComponent, this.#container);
+    this.#setFilmCardClickHandlers();
+
+    if (prevFilmCardComponent === null) {
+      render(this.#filmCardComponent, this.#container);
+      return;
+    }
+
+    if (this.#mode === FilmMode.DEFAULT) {
+      replace(this.#filmCardComponent, prevFilmCardComponent);
+    }
+
+    if (this.#mode === FilmMode.POPUP) {
+      replace(this.#filmCardComponent, prevFilmCardComponent);
+      this.#filmDetailsComponent = new FilmDetailsView(film, this.#comments);
+      this.#setFilmDetailsClickHandlers();
+      replace(this.#filmDetailsComponent, prevFilmDetailsComponent);
+    }
+    remove(prevFilmCardComponent);
+    remove(prevFilmDetailsComponent);
   };
 
-  #renderFilmDetails = (film) => {
-    const comments = [...this.#commentsModel.get(film)];
+  destroy = () => {
+    remove(this.#filmCardComponent);
+    remove(this.#filmDetailsComponent);
+  };
 
-    this.#filmDetailsWrapper = new FilmDetailsView();
-    this.#filmDetailsInfoComponent = new FilmDetailsInfoView(film);
-    this.#filmDetailsCommentsComponent = new FilmDetailsCommentsView(comments);
-    /**
-     * Render film details
-     */
-    render(this.#filmDetailsWrapper, this.#mainContainer.parentElement, RenderPosition.AFTEREND);
-    render(
-      this.#filmDetailsInfoComponent,
-      this.#filmDetailsWrapper.element.firstChild
-    );
-    render(
-      new FilmDetailsControlsView(film),
-      this.#filmDetailsInfoComponent.element,
-      RenderPosition.AFTEREND
-    );
-    render(
-      this.#filmDetailsCommentsComponent,
-      this.#filmDetailsWrapper.element.firstChild
-    );
-    render(
-      new FilmDetailsFormView(),
-      this.#filmDetailsCommentsComponent.element.firstChild
-    );
+  resetView = () => {
+    if (this.#mode !== FilmMode.DEFAULT) {
+      this.#removeFilmDetails();
+    }
+  };
+
+  #setFilmCardClickHandlers() {
+    this.#filmCardComponent.setOpenPopupButtonClickHandler(this.#renderFilmDetails);
+    this.#filmCardComponent.setWatchlistClickHandler(this.#handlerWatchlistClick);
+    this.#filmCardComponent.setAlreadyWatchedClickHandler(this.#handlerAlreadyWatchedClick);
+    this.#filmCardComponent.setFavoriteClickHandler(this.#handlerFavoriteClick);
+  }
+
+  #setFilmDetailsClickHandlers() {
+    this.#filmDetailsComponent.setCloseButtonClickHandler(this.#removeFilmDetails);
+    this.#filmDetailsComponent.setWatchlistClickHandler(this.#handlerWatchlistClick);
+    this.#filmDetailsComponent.setAlreadyWatchedClickHandler(this.#handlerAlreadyWatchedClick);
+    this.#filmDetailsComponent.setFavoriteClickHandler(this.#handlerFavoriteClick);
+  }
+
+  #renderFilmDetails = (film) => {
+    this.#changeMode();
+    this.#mode = FilmMode.POPUP;
+
+    this.#filmDetailsComponent = new FilmDetailsView(film, this.#comments);
+    render(this.#filmDetailsComponent, this.#mainContainer.parentElement, RenderPosition.AFTEREND);
+    this.#setFilmDetailsClickHandlers();
 
     document.body.classList.add('hide-overflow');
     document.addEventListener('keydown', this.#onEscapeKey);
-
-    /**
-     * Close popup button
-     */
-    this.#filmDetailsInfoComponent.setCloseButtonClickHandler(this.#removeFilmDetails);
   };
 
   #removeFilmDetails = () => {
-    this.#filmDetailsWrapper.element.remove();
-    this.#filmDetailsWrapper.removeElement();
+    this.#mode = FilmMode.DEFAULT;
+
+    this.#filmDetailsComponent.element.remove();
+    this.#filmDetailsComponent.removeElement();
+
     document.body.classList.remove('hide-overflow');
     document.removeEventListener('keydown', this.#onEscapeKey);
   };
@@ -76,5 +105,17 @@ export default class FilmPresenter {
       this.#removeFilmDetails();
       document.removeEventListener('keydown', this.#onEscapeKey);
     }
+  };
+
+  #handlerWatchlistClick = () => {
+    this.#changeData(Object.assign({},this.#film,{userDetails: {...this.#film.userDetails, watchlist:!this.#film.userDetails.watchlist,},},),);
+  };
+
+  #handlerAlreadyWatchedClick = () => {
+    this.#changeData(Object.assign({},this.#film,{userDetails: {...this.#film.userDetails, alreadyWatched:!this.#film.userDetails.alreadyWatched,},},),);
+  };
+
+  #handlerFavoriteClick = () => {
+    this.#changeData(Object.assign({},this.#film,{userDetails: {...this.#film.userDetails, favorite:!this.#film.userDetails.favorite,},},),);
   };
 }
