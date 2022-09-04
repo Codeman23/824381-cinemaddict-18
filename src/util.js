@@ -63,6 +63,24 @@ const filters = {
   [FilterTypes.FAVORITE] : (items) => items.filter((item) => item.favorite === true),
 };
 
+/**
+ * Function that update film data
+ * @param {*} items - films data
+ * @param {*} update - new data
+ * @returns - updated data
+ */
+const updateItem = (items, update) => {
+  const index = items.findIndex((item) => item.id === update.id);
+  if (index === -1) {
+    return items;
+  }
+  return [
+    ...items.slice(0, index),
+    update,
+    ...items.slice(index + 1),
+  ];
+};
+
 export {
   getRandomInteger,
   getRandomValueFromItems,
@@ -70,5 +88,6 @@ export {
   formatValueToDate,
   formatValueToYear,
   formatMinutesToHoursAndMinutes,
-  filters
+  filters,
+  updateItem,
 };
