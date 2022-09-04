@@ -108,14 +108,14 @@ export default class FilmPresenter {
   };
 
   #handlerWatchlistClick = () => {
-    this.#changeData(Object.assign({},this.#film,{userDetails: {...this.#film.userDetails, watchlist:!this.#film.userDetails.watchlist,},},),);
+    this.#changeData ({...this.#film, userDetails: {...this.#film.userDetails, watchlist: !this.#film.userDetails.watchlist}});
   };
 
   #handlerAlreadyWatchedClick = () => {
-    this.#changeData(Object.assign({},this.#film,{userDetails: {...this.#film.userDetails, alreadyWatched:!this.#film.userDetails.alreadyWatched,},},),);
+    this.#changeData ({...this.#film, userDetails: {...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched}});
   };
 
   #handlerFavoriteClick = () => {
-    this.#changeData(Object.assign({},this.#film,{userDetails: {...this.#film.userDetails, favorite:!this.#film.userDetails.favorite,},},),);
+    this.#changeData ({...this.#film, userDetails: {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite}});
   };
 }
