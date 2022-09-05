@@ -81,6 +81,44 @@ const updateItem = (items, update) => {
   ];
 };
 
+/**
+ * Function that putt films with no data to the end of the list
+ * @param {*} dateA - film data
+ * @param {*} dateB - film data
+ * @returns - sorted films data
+ */
+const getFilmWithNoData = (dateA, dateB) => {
+  if (dateA === null && dateB === null){
+    return 0;
+  }
+  if (dateA === null) {
+    return 1;
+  }
+  if (dateB === null) {
+    return -1;
+  }
+  return null;
+};
+
+/**
+ * Function that sorts a films by newest date
+ * @param {*} filmA - film date data
+ * @param {*} filmB - film date data
+ * @returns sorted films by date
+ */
+const sortFilmUp = (filmA, filmB) => {
+  const filmWithNoData = getFilmWithNoData (filmA.filmInfo.release.date, filmB.filmInfo.release.date);
+  return filmWithNoData ?? dayjs(filmB.filmInfo.release.date).diff(dayjs(filmA.filmInfo.release.date));
+};
+
+/**
+ * Function that sorts a films by the rating value
+ * @param {*} filmA - film rating data
+ * @param {*} filmB - film rating data
+ * @returns sorted films by rating
+ */
+const sortRating = (filmA, filmB) => filmB.filmInfo.totalRating - filmA.filmInfo.totalRating;
+
 export {
   getRandomInteger,
   getRandomValueFromItems,
@@ -90,4 +128,6 @@ export {
   formatMinutesToHoursAndMinutes,
   filters,
   updateItem,
+  sortFilmUp,
+  sortRating,
 };
