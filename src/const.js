@@ -27,4 +27,10 @@ const FilmMode = {
   POPUP: 'Popup',
 };
 
-export { SectionHeadings, ExtraClassNames, FilmsCounters, FilterTypes, MAX_DESCRIPTION_LENGHT, FilmMode };
+const SortType = {
+  DEFAULT: 'default',
+  DATE: 'date',
+  RATING: 'rating',
+};
+
+export { SectionHeadings, ExtraClassNames, FilmsCounters, FilterTypes, MAX_DESCRIPTION_LENGHT, FilmMode, SortType };
