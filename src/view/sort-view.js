@@ -20,8 +20,8 @@ export default class SortView extends AbstractView{
   };
 
   #toggleActiveClass = (evt) => {
-    const buttons = this.element.querySelectorAll('a');
-    buttons.forEach( (button) => button.classList.remove('sort__button--active'));
+    const activeButton = this.element.querySelector('.sort__button--active');
+    activeButton.classList.remove('sort__button--active'); 
     evt.target.classList.add('sort__button--active');
   };
 
