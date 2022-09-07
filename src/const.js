@@ -22,15 +22,22 @@ const FilterTypes = {
   FAVORITE: 'Favorite',
 };
 
-const FilmMode = {
+const FilmModes = {
   DEFAULT: 'Default',
   POPUP: 'Popup',
 };
 
-const SortType = {
+const SortTypes = {
   DEFAULT: 'default',
   DATE: 'date',
   RATING: 'rating',
 };
 
-export { SectionHeadings, ExtraClassNames, FilmsCounters, FilterTypes, MAX_DESCRIPTION_LENGHT, FilmMode, SortType };
+const CommentEmotions = {
+  SMILE: 'smile',
+  SLEEPING: 'sleeping',
+  PUKE: 'puke',
+  ANGRY: 'angry',
+};
+
+export { SectionHeadings, ExtraClassNames, FilmsCounters, FilterTypes, MAX_DESCRIPTION_LENGHT, FilmModes, SortTypes, CommentEmotions};

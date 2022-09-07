@@ -1,7 +1,7 @@
 import FilmCardView from '../view/film-card-view.js';
 import FilmDetailsView from '../view/film-details-view.js';
 import { render, replace, remove, RenderPosition} from '../framework/render.js';
-import { FilmMode } from '../const.js';
+import { FilmModes, CommentEmotions } from '../const.js';
 
 export default class FilmPresenter {
   #container = null;
@@ -13,7 +13,7 @@ export default class FilmPresenter {
   #film = null;
   #changeData = null;
   #changeMode = null;
-  #mode = FilmMode.DEFAULT;
+  #mode = FilmModes.DEFAULT;
 
   constructor (container, filmsContainer, commentsModel, changeData, changeMode) {
     this.#container = container;
@@ -38,11 +38,11 @@ export default class FilmPresenter {
       return;
     }
 
-    if (this.#mode === FilmMode.DEFAULT) {
+    if (this.#mode === FilmModes.DEFAULT) {
       replace(this.#filmCardComponent, prevFilmCardComponent);
     }
 
-    if (this.#mode === FilmMode.POPUP) {
+    if (this.#mode === FilmModes.POPUP) {
       replace(this.#filmCardComponent, prevFilmCardComponent);
       this.#filmDetailsComponent = new FilmDetailsView(film, this.#comments);
       this.#setFilmDetailsClickHandlers();
@@ -58,7 +58,7 @@ export default class FilmPresenter {
   };
 
   resetView = () => {
-    if (this.#mode !== FilmMode.DEFAULT) {
+    if (this.#mode !== FilmModes.DEFAULT) {
       this.#removeFilmDetails();
     }
   };
@@ -79,7 +79,7 @@ export default class FilmPresenter {
 
   #renderFilmDetails = (film) => {
     this.#changeMode();
-    this.#mode = FilmMode.POPUP;
+    this.#mode = FilmModes.POPUP;
 
     this.#filmDetailsComponent = new FilmDetailsView(film, this.#comments);
     render(this.#filmDetailsComponent, this.#mainContainer.parentElement, RenderPosition.AFTEREND);
@@ -90,7 +90,7 @@ export default class FilmPresenter {
   };
 
   #removeFilmDetails = () => {
-    this.#mode = FilmMode.DEFAULT;
+    this.#mode = FilmModes.DEFAULT;
 
     this.#filmDetailsComponent.element.remove();
     this.#filmDetailsComponent.removeElement();
