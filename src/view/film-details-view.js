@@ -2,6 +2,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { EmotionTypes } from '../const.js';
 
 const createFilmDetailsTemplate = (film) => {
+  console.log(film);
   /**
    * Function that return genres markup
    * @param {*} genres - genres data
@@ -135,7 +136,7 @@ const createFilmDetailsTemplate = (film) => {
 
 export default class FilmDetailsView extends AbstractStatefulView {
 
-  constructor(film, comments, viewCondition, updateviewCondition) {
+  constructor(film, comments, viewCondition, updateViewCondition) {
     super();
     this._state = FilmDetailsView.parseFilmToState(
       film,
@@ -144,7 +145,7 @@ export default class FilmDetailsView extends AbstractStatefulView {
       viewCondition.comment,
       viewCondition.scrollPosition
     );
-    this.updateviewCondition = updateviewCondition;
+    this.updateViewCondition = updateViewCondition;
     this.#setCommentHandlers();
   }
 
@@ -192,19 +193,19 @@ export default class FilmDetailsView extends AbstractStatefulView {
 
   #watchlistClickHandler = (evt) => {
     evt.preventDefault();
-    this.#updateviewCondition();
+    this.#updateViewCondition();
     this._callback.watchlistClick();
   };
 
   #alreadyWatchedClickHandler = (evt) => {
     evt.preventDefault();
-    this.#updateviewCondition();
+    this.#updateViewCondition();
     this._callback.alreadyWatchedClick();
   };
 
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
-    this.#updateviewCondition();
+    this.#updateViewCondition();
     this._callback.favoriteClick();
   };
 
@@ -226,8 +227,8 @@ export default class FilmDetailsView extends AbstractStatefulView {
     this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#commentInputChangeHandler);
   };
 
-  #updateviewCondition = () => {
-    this.updateviewCondition({
+  #updateViewCondition = () => {
+    this.updateViewCondition({
       emotion: this._state.checkedEmotion,
       comment: this._state.comment,
       scrollPosition: this.element.scrollTop
