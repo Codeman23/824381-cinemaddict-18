@@ -5,7 +5,7 @@ import FilmsListContainerView from '../view/films-list-container-view.js';
 import ButtonMoreView from '../view/button-more-view.js';
 import FilmsListEmptyView from '../view/films-list-empty-view.js';
 import FilmPresenter from './film-presenter.js';
-import { SectionHeadings, ExtraClassNames, FilmsCounters, SortType } from '../const.js';
+import { SectionHeadings, ExtraClassNames, FilmsCounters, SortTypes } from '../const.js';
 import { render, remove } from '../framework/render.js';
 import { updateItem, sortFilmUp, sortRating } from '../util.js';
 
@@ -22,7 +22,7 @@ export default class FilmsPresenter {
   #films = [];
   #renderFilmCount = FilmsCounters.MAIN;
   #addedFilmsPresenter = new Map();
-  #currentSortType = SortType.DEFAULT;
+  #currentSortType = SortTypes.DEFAULT;
   #sourcedFilms = [];
 
   constructor (filmsContainer, filmsModel, commentsModel) {
@@ -39,10 +39,10 @@ export default class FilmsPresenter {
 
   #sortFilms = (sortType) => {
     switch (sortType) {
-      case SortType.DATE:
+      case SortTypes.DATE:
         this.#films.sort(sortFilmUp);
         break;
-      case SortType.RATING:
+      case SortTypes.RATING:
         this.#films.sort(sortRating);
         break;
       default:

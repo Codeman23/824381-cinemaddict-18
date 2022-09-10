@@ -1,7 +1,7 @@
 import FilmCardView from '../view/film-card-view.js';
 import FilmDetailsView from '../view/film-details-view.js';
 import { render, replace, remove, RenderPosition} from '../framework/render.js';
-import { FilmMode } from '../const.js';
+import { FilmModes } from '../const.js';
 
 export default class FilmPresenter {
   #container = null;
@@ -13,7 +13,12 @@ export default class FilmPresenter {
   #film = null;
   #changeData = null;
   #changeMode = null;
-  #mode = FilmMode.DEFAULT;
+  #mode = FilmModes.DEFAULT;
+  #detailsViewCondition = {
+    emotion: null,
+    comment: null,
+    scrollPosition: 0
+  };
 
   constructor (container, filmsContainer, commentsModel, changeData, changeMode) {
     this.#container = container;
@@ -38,13 +43,13 @@ export default class FilmPresenter {
       return;
     }
 
-    if (this.#mode === FilmMode.DEFAULT) {
+    if (this.#mode === FilmModes.DEFAULT) {
       replace(this.#filmCardComponent, prevFilmCardComponent);
     }
 
-    if (this.#mode === FilmMode.POPUP) {
+    if (this.#mode === FilmModes.POPUP) {
       replace(this.#filmCardComponent, prevFilmCardComponent);
-      this.#filmDetailsComponent = new FilmDetailsView(film, this.#comments);
+      this.#filmDetailsComponent = new FilmDetailsView(film, this.#comments, this.#detailsViewCondition, this.#updateDetailsViewCondition);
       this.#setFilmDetailsClickHandlers();
       replace(this.#filmDetailsComponent, prevFilmDetailsComponent);
     }
@@ -58,9 +63,13 @@ export default class FilmPresenter {
   };
 
   resetView = () => {
-    if (this.#mode !== FilmMode.DEFAULT) {
+    if (this.#mode !== FilmModes.DEFAULT) {
       this.#removeFilmDetails();
     }
+  };
+
+  #updateDetailsViewCondition = (detailsViewCondition) => {
+    this.#detailsViewCondition = {...detailsViewCondition};
   };
 
   #setFilmCardClickHandlers() {
@@ -79,9 +88,9 @@ export default class FilmPresenter {
 
   #renderFilmDetails = (film) => {
     this.#changeMode();
-    this.#mode = FilmMode.POPUP;
+    this.#mode = FilmModes.POPUP;
 
-    this.#filmDetailsComponent = new FilmDetailsView(film, this.#comments);
+    this.#filmDetailsComponent = new FilmDetailsView(film, this.#comments, this.#detailsViewCondition, this.#updateDetailsViewCondition);
     render(this.#filmDetailsComponent, this.#mainContainer.parentElement, RenderPosition.AFTEREND);
     this.#setFilmDetailsClickHandlers();
 
@@ -90,13 +99,14 @@ export default class FilmPresenter {
   };
 
   #removeFilmDetails = () => {
-    this.#mode = FilmMode.DEFAULT;
+    this.#mode = FilmModes.DEFAULT;
 
     this.#filmDetailsComponent.element.remove();
     this.#filmDetailsComponent.removeElement();
 
     document.body.classList.remove('hide-overflow');
     document.removeEventListener('keydown', this.#onEscapeKey);
+    this.#detailsViewCondition = { emotion: null, comment: null, scrollPosition: 0};
   };
 
   #onEscapeKey = (evt) => {
