@@ -33,11 +33,11 @@ const SortTypes = {
   RATING: 'rating',
 };
 
-const CommentEmotions = {
+const EmotionTypes = {
   SMILE: 'smile',
   SLEEPING: 'sleeping',
   PUKE: 'puke',
   ANGRY: 'angry',
 };
 
-export { SectionHeadings, ExtraClassNames, FilmsCounters, FilterTypes, MAX_DESCRIPTION_LENGHT, FilmModes, SortTypes, CommentEmotions};
+export { SectionHeadings, ExtraClassNames, FilmsCounters, FilterTypes, MAX_DESCRIPTION_LENGHT, FilmModes, SortTypes, EmotionTypes};
