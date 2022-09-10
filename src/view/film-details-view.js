@@ -2,7 +2,6 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { EmotionTypes } from '../const.js';
 
 const createFilmDetailsTemplate = (film) => {
-  console.log(film);
   /**
    * Function that return genres markup
    * @param {*} genres - genres data

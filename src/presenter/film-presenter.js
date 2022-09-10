@@ -106,6 +106,7 @@ export default class FilmPresenter {
 
     document.body.classList.remove('hide-overflow');
     document.removeEventListener('keydown', this.#onEscapeKey);
+    this.#detailsViewCondition = { emotion: null, comment: null, scrollPosition: 0};
   };
 
   #onEscapeKey = (evt) => {
