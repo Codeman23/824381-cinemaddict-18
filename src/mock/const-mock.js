@@ -31,8 +31,13 @@ const YearsDuration = {
 };
 
 const DaysDuration = {
-  MIN: 0,
+  MIN: 1,
   MAX: 7,
+};
+
+const MonthDuration = {
+  MIN: 1,
+  MAX: 9,
 };
 
 const DescriptionSentences = {
@@ -152,6 +157,7 @@ export {
   Runtime,
   YearsDuration,
   DaysDuration,
+  MonthDuration,
   DescriptionSentences,
   names,
   surNames,
