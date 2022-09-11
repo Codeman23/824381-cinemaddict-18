@@ -1,6 +1,9 @@
 import dayjs from 'dayjs';
-import { getRandomInteger, getRandomValueFromItems, formatValueToDateAndTime } from '../util';
-import { DaysDuration, names, surNames, emotions, comments } from '../mock/const-mock';
+import relativeTimePlugin from 'dayjs/plugin/relativeTime';
+import { getRandomInteger, getRandomValueFromItems } from '../util';
+import { DaysDuration, MonthDuration, names, surNames, emotions, comments } from '../mock/const-mock';
+
+dayjs.extend(relativeTimePlugin);
 
 /**
  * Function that generate one comment properties
@@ -9,9 +12,7 @@ import { DaysDuration, names, surNames, emotions, comments } from '../mock/const
 const generateComment = () => ({
   author: `${getRandomValueFromItems(names)} ${getRandomValueFromItems(surNames)}`,
   comment: getRandomValueFromItems(comments),
-  date: formatValueToDateAndTime(
-    dayjs().subtract(getRandomInteger(DaysDuration.MIN, DaysDuration.MAX), 'date').toDate()
-  ),
+  date: dayjs().to(`${dayjs().year()}-${getRandomInteger(MonthDuration.MIN, MonthDuration.MAX)}-${getRandomInteger(DaysDuration.MIN, DaysDuration.MAX)}`),
   emotion: getRandomValueFromItems(emotions),
 });
 
