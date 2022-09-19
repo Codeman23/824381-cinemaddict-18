@@ -56,42 +56,66 @@ export default class FilmCardView extends AbstractView {
   }
 
   setOpenPopupButtonClickHandler = (callback) => {
-    this._callback.click = callback;
+    this._callback.openPopupClick = callback;
     this.element.querySelector('a').addEventListener('click', this.#openPopupButtonClickHandler);
-  };
-
-  setWatchlistClickHandler = (callback) => {
-    this._callback.watchlistClick = callback;
-    this.element.querySelector('.film-card__controls-item--add-to-watchlist ').addEventListener('click', this.#watchlistClickHandler);
-  };
-
-  setAlreadyWatchedClickHandler = (callback) => {
-    this._callback.alreadyWatchedClick = callback;
-    this.element.querySelector('.film-card__controls-item--mark-as-watched').addEventListener('click', this.#alreadyWatchedClickHandler);
-  };
-
-  setFavoriteClickHandler = (callback) => {
-    this._callback.favoriteClick = callback;
-    this.element.querySelector('.film-card__controls-item--favorite').addEventListener('click', this.#favoriteClickHandler );
   };
 
   #openPopupButtonClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.click(this.#film);
+    this._callback.openPopupClick();
   };
 
-  #watchlistClickHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.watchlistClick();
+  setControlButtonClickHandler = (callback) => {
+    this._callback.controlButtonClick = callback;
+
+    this.element.querySelector('.film-card__controls').addEventListener('click', (evt) => {
+      evt.preventDefault();
+
+      let update;
+      switch (evt.target) {
+        case this.element.querySelector('.film-card__controls-item--add-to-watchlist'):
+          update = { ...this.#film, userDetails: {...this.#film.userDetails, watchlist: !this.#film.userDetails.watchlist }};
+          break;
+        case this.element.querySelector('.film-card__controls-item--mark-as-watched'):
+          update = { ...this.#film, userDetails: {...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched }};
+          break;
+        case this.element.querySelector('.film-card__controls-item--favorite'):
+          update = { ...this.#film, userDetails: {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite }};
+          break;
+      }
+
+      this._callback.controlButtonClick(update);
+    });
   };
 
-  #alreadyWatchedClickHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.alreadyWatchedClick();
-  };
 
-  #favoriteClickHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.favoriteClick();
-  };
+  // setWatchlistClickHandler = (callback) => {
+  //   this._callback.watchlistClick = callback;
+  //   this.element.querySelector('.film-card__controls-item--add-to-watchlist ').addEventListener('click', this.#watchlistClickHandler);
+  // };
+
+  // setAlreadyWatchedClickHandler = (callback) => {
+  //   this._callback.alreadyWatchedClick = callback;
+  //   this.element.querySelector('.film-card__controls-item--mark-as-watched').addEventListener('click', this.#alreadyWatchedClickHandler);
+  // };
+
+  // setFavoriteClickHandler = (callback) => {
+  //   this._callback.favoriteClick = callback;
+  //   this.element.querySelector('.film-card__controls-item--favorite').addEventListener('click', this.#favoriteClickHandler );
+  // };
+
+  // #watchlistClickHandler = (evt) => {
+  //   evt.preventDefault();
+  //   this._callback.watchlistClick();
+  // };
+
+  // #alreadyWatchedClickHandler = (evt) => {
+  //   evt.preventDefault();
+  //   this._callback.alreadyWatchedClick();
+  // };
+
+  // #favoriteClickHandler = (evt) => {
+  //   evt.preventDefault();
+  //   this._callback.favoriteClick();
+  // };
 }
