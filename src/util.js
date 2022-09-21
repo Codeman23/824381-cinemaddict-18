@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import {FilterTypes} from './const.js';
+import {FilterTypes, KeyboardKeys} from './const.js';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -122,6 +122,13 @@ const sortComments = (film, comments) => {
   return sortedComments;
 };
 
+/**
+ * Function that determines key press
+ * @param {*} evt - event
+ * @returns - return boolean
+ */
+const pressCtrlEnter = (evt) => evt.key === KeyboardKeys.ENTER && (evt.ctrlKey || evt.metaKey);
+
 export {
   getRandomInteger,
   getRandomValueFromItems,
@@ -133,4 +140,5 @@ export {
   sortComments,
   sortFilmUp,
   sortRating,
+  pressCtrlEnter
 };

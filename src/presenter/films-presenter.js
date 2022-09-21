@@ -77,11 +77,10 @@ export default class FilmsPresenter {
         this.#filmsModel.updateFilm(updateType, update);
         break;
       case UserActions.ADD_COMMENT:
-        this.#commentsModel.addComment(comment);
+        this.#commentsModel.add(comment);
         this.#filmsModel.updateFilm(updateType, update);
         break;
       case UserActions.DELETE_COMMENT:
-        this.#commentsModel.deleteComment(comment);
         this.#filmsModel.updateFilm(updateType, update);
         break;
     }
@@ -104,6 +103,7 @@ export default class FilmsPresenter {
   };
 
   #clearFilmsBoard = ({resetRenderedTaskCount = false, resetSortType = false} = {}) => {
+
     this.#addedFilmsPresenter.forEach((presenter) => presenter.destroy());
     this.#addedFilmsPresenter.clear();
 

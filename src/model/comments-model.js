@@ -18,23 +18,11 @@ export default class CommentsModel extends Observable {
 
   get = () => this.#allComments;
 
-  add = (updateType, update) => {
-    this.#allComments.push(update);
-    this._notify(updateType, update);
-  };
-
-  delete = (updateType, update) => {
-    const index = this.#allComments.findIndex((comment) => comment.id === update.id);
-
-    if (index === -1) {
-      throw new Error('Can\'t delete unexisting task');
-    }
-
-    this.#allComments = [
-      ...this.#allComments.slice(0, index),
-      ...this.#allComments.slice(index + 1),
+  add = (update) => {
+    this.#comments = [
+      update,
+      ...this.#comments,
     ];
-
-    this._notify(updateType);
+    this.#allComments.push(update);
   };
 }

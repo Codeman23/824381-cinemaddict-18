@@ -1,6 +1,13 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { EmotionTypes } from '../const.js';
 import { sortComments } from '../util.js';
+import { getRandomInteger} from '../util';
+import dayjs from 'dayjs';
+import relativeTimePlugin from 'dayjs/plugin/relativeTime';
+import { pressCtrlEnter } from '../util.js';
+import he from 'he';
+
+dayjs.extend(relativeTimePlugin);
 
 const createFilmDetailsTemplate = (film) => {
   /**
@@ -79,22 +86,23 @@ const createFilmDetailsTemplate = (film) => {
           <button type="button" class="film-details__control-button film-details__control-button--watchlist 
           ${getActive(film.userDetails.watchlist)}" id="watchlist" name="watchlist">Add to watchlist</button>
           <button type="button" class="film-details__control-button film-details__control-button--watched 
-          ${getActive(film.userDetails.alreadyWatched)}" id="watched" name="watched">Already watched</button>
+          ${getActive(film.userDetails.alreadyWatched)}" id="history" name="watched">Already watched</button>
           <button type="button" class="film-details__control-button film-details__control-button--favorite 
           ${getActive(film.userDetails.favorite)}" id="favorite" name="favorite">Add to favorites</button>
         </section>
       </div>
       <div class="film-details__bottom-container">
         <section class="film-details__comments-wrap">
-          <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">
-          ${film.popupComments.length}</span></h3>
+          <h3 class="film-details__comments-title">Comments 
+          <span class="film-details__comments-count">${film.popupComments.length}</span></h3>
           <ul class="film-details__comments-list">
-            ${film.popupComments.map((comment) =>`<li class="film-details__comment">
+
+            ${film.popupComments.map((comment) =>`<li class="film-details__comment" data-comment-id="${comment.id}">
               <span class="film-details__comment-emoji">
                 <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji-smile">
               </span>
               <div>
-                <p class="film-details__comment-text">${comment.comment}</p>
+                <p class="film-details__comment-text">${he.encode(comment.comment)}</p>
                 <p class="film-details__comment-info">
                   <span class="film-details__comment-author">${comment.author}</span>
                   <span class="film-details__comment-day">${comment.date}</span>
@@ -102,13 +110,14 @@ const createFilmDetailsTemplate = (film) => {
                 </p>
               </div>
               </li>`).join('')}
+
           </ul>
           <form class="film-details__new-comment" action="" method="get">
           <div class="film-details__add-emoji-label">
             ${film.checkedEmotion ? `<img src="images/emoji/${film.checkedEmotion}.png" alt="emoji-${film.checkedEmotion}" width="55" height="55">` : ''}
           </div>
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="${film.description ? film.description : 'Select reaction below and write comment here'}" name="comment"></textarea>
+            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
           </label>
           <div class="film-details__emoji-list">
             <input ${film.checkedEmotion === EmotionTypes.SMILE ? 'checked' : ''}  class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
@@ -135,11 +144,14 @@ const createFilmDetailsTemplate = (film) => {
   </section>`;};
 
 export default class FilmDetailsView extends AbstractStatefulView {
+  #scrollPosition = 0;
+
   constructor(film, comments) {
     super();
     this._state = FilmDetailsView.convertFilmToState( film, sortComments(film, comments) );
 
     this.#setCommentHandlers();
+    this.#setScrollPosition();
   }
 
   get template() {
@@ -151,7 +163,7 @@ export default class FilmDetailsView extends AbstractStatefulView {
 
     this.element.querySelector('.film-details__controls').addEventListener('click', (evt) => {
       evt.preventDefault();
-      const scrollPosition = this.element.scrollTop;
+      const buttonName = evt.target.id;
 
       switch (evt.target) {
         case this.element.querySelector('.film-details__control-button--watchlist'):
@@ -171,25 +183,38 @@ export default class FilmDetailsView extends AbstractStatefulView {
           break;
       }
 
-      this._callback.controlButtonClick({...FilmDetailsView.convertStateToFilm(this._state)});
-      this.element.scrollTop = scrollPosition;
+      this._callback.controlButtonClick({...FilmDetailsView.convertStateToFilm(this._state)}, buttonName, this.#scrollPosition);
     });
   };
 
+  setCommentAddHandler = (callback) => {
+    this._callback.commentFormSubmit = callback;
+    this.element.querySelector('.film-details__comment-input').addEventListener('keydown', this.#commentAddHandler);
+  };
+
+  setCommentDeleteHandler = (callback) => {
+    this._callback.deleteClick = callback;
+    this.element.querySelectorAll('.film-details__comment-delete').forEach((button) => button.addEventListener('click', this.#commentDeleteClickHandler));
+  };
+
   _restoreHandlers = () => {
-    // this.setScrollPosition();
+    this.#setScrollPosition();
     this.#setCommentHandlers();
     this.setControlButtonClickHandler(this._callback.controlButtonClick);
     this.setCloseButtonClickHandler(this._callback.closeButtonClick);
+    this.setCommentAddHandler(this._callback.commentFormSubmit);
+    this.setCommentDeleteHandler(this._callback.deleteClick);
   };
-
-  // setScrollPosition = () => {
-  //   this.element.scrollTop = this._state.scrollPosition;
-  // };
 
   setCloseButtonClickHandler = (callback) => {
     this._callback.closeButtonClick = callback;
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeButtonClickHandler);
+  };
+
+  #setScrollPosition = () => {
+    this.element.addEventListener ('scroll', () => {
+      this.#scrollPosition = this.element.scrollTop;
+    });
   };
 
   #closeButtonClickHandler = (evt) => {
@@ -209,11 +234,51 @@ export default class FilmDetailsView extends AbstractStatefulView {
   };
 
   #commentInputChangeHandler = (evt) => {
-    const scrollPosition = this.element.scrollTop;
-
     evt.preventDefault();
     this._setState({description: evt.target.value});
-    this.element.scrollTop = scrollPosition;
+  };
+
+  #commentAddHandler = (evt) => {
+    if(!this._state.checkedEmotion || this._state.description === '') {
+      return;
+    }
+
+    if (pressCtrlEnter(evt)) {
+      evt.preventDefault();
+
+      const newComment = {
+        id: String(getRandomInteger(60, 80)),
+        author: 'Unknown',
+        comment: evt.target.value,
+        date: dayjs().fromNow(true),
+        emotion: this._state.checkedEmotion
+      };
+
+      this.updateElement({
+        popupComments: [...this._state.popupComments, newComment],
+        description: '',
+        checkedEmotion: false
+      });
+
+      const update = {...FilmDetailsView.convertStateToFilm(this._state), comments: [...this._state.comments, newComment.id]};
+      this._callback.commentFormSubmit(update, newComment, this.#scrollPosition);
+    }
+  };
+
+  #commentDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+
+    const currentId = evt.target.closest('.film-details__comment').dataset.commentId;
+    const comment = this._state.popupComments.find((item) => item.id === currentId);
+    const updatedComments = this._state.comments.filter((item) => item !== currentId);
+    const update = {...FilmDetailsView.convertStateToFilm(this._state), comments: updatedComments};
+
+    this.updateElement({
+      comments: updatedComments,
+      popupComments: this._state.popupComments.filter((item) => item !== comment)
+    });
+
+    this._callback.deleteClick(update, comment, this.#scrollPosition);
   };
 
   #setCommentHandlers = () => {

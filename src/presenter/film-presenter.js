@@ -1,7 +1,7 @@
 import FilmCardView from '../view/film-card-view.js';
 import FilmDetailsView from '../view/film-details-view.js';
 import { render, replace, remove, RenderPosition} from '../framework/render.js';
-import { FilmModes, UserActions, UpdateTypes, FilterTypes } from '../const.js';
+import { FilmModes, UserActions, UpdateTypes, FilterTypes, KeyboardKeys } from '../const.js';
 
 export default class FilmPresenter {
   #container = null;
@@ -14,6 +14,7 @@ export default class FilmPresenter {
   #changeMode = null;
   #filterType = null;
   #mode = FilmModes.DEFAULT;
+  #scrollPosition = 0;
 
   constructor (container, filmsContainer, comments, changeData, changeMode, filterType) {
     this.#container = container;
@@ -35,7 +36,6 @@ export default class FilmPresenter {
     this.#filmCardComponent.setOpenPopupButtonClickHandler(this.#renderFilmDetails);
     this.#filmCardComponent.setControlButtonClickHandler(this.#handleControlButtonClick);
 
-
     if (prevFilmCardComponent === null) {
       render(this.#filmCardComponent, this.#container);
       return;
@@ -50,7 +50,9 @@ export default class FilmPresenter {
       this.#filmDetailsComponent = new FilmDetailsView(film, this.#comments);
       this.#setFilmDetailsClickHandlers();
       replace(this.#filmDetailsComponent, prevFilmDetailsComponent);
+      this.#scrollPopupToPosition();
     }
+
     remove(prevFilmCardComponent);
     remove(prevFilmDetailsComponent);
   };
@@ -83,6 +85,8 @@ export default class FilmPresenter {
   #setFilmDetailsClickHandlers = () => {
     this.#filmDetailsComponent.setCloseButtonClickHandler(this.#removeFilmDetails);
     this.#filmDetailsComponent.setControlButtonClickHandler(this.#handleControlButtonClick);
+    this.#filmDetailsComponent.setCommentAddHandler(this.#handleCommentAddClick);
+    this.#filmDetailsComponent.setCommentDeleteHandler(this.#handleCommentDeleteClick);
   };
 
   #removeFilmDetails = () => {
@@ -91,21 +95,58 @@ export default class FilmPresenter {
     document.removeEventListener('keydown', this.#onEscapeKey);
   };
 
+  #scrollPopupToPosition () {
+    this.#filmDetailsComponent.element.scrollBy (0, this.#scrollPosition);
+  }
+
   #onEscapeKey = (evt) => {
-    if(evt.key === 'Escape' || evt.key === 'Esc') {
+    if(evt.key === KeyboardKeys.ESCAPE || evt.key === KeyboardKeys.ESC) {
       evt.preventDefault();
       this.#removeFilmDetails();
       document.removeEventListener('keydown', this.#onEscapeKey);
     }
   };
 
-  #handleControlButtonClick = (update) => {
-    const updateType = (filterType) => filterType === FilterTypes.ALL ? UpdateTypes.PATCH : UpdateTypes.MINOR;
+  #handleControlButtonClick = (update, buttonName, position) => {
+    this.#scrollPosition = position;
+
+    const updateType = (filterType) => {
+      if (filterType === FilterTypes.ALL || filterType.toLowerCase() !== buttonName) {
+        return UpdateTypes.PATCH;
+      } else {
+        if (this.#mode === FilmModes.POPUP) {
+          this.#removeFilmDetails();
+        }
+        return UpdateTypes.MINOR;
+      }
+    };
 
     this.#changeData(
       UserActions.UPDATE_FILM,
       updateType(this.#filterType),
       update
+    );
+  };
+
+  #handleCommentAddClick = (update, comment, position) => {
+    this.#scrollPosition = position;
+
+    this.#changeData(
+      UserActions.ADD_COMMENT,
+      UpdateTypes.PATCH,
+      update,
+      comment
+    );
+  };
+
+  #handleCommentDeleteClick = (update, comment, position) => {
+    this.#scrollPosition = position;
+
+    this.#changeData(
+      UserActions.DELETE_COMMENT,
+      UpdateTypes.PATCH,
+      update,
+      comment
     );
   };
 }

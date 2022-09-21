@@ -60,4 +60,10 @@ const UpdateTypes = {
   MAJOR: 'MAJOR',
 };
 
-export { SectionHeadings, ExtraClassNames, FilmsCounters, FilterTypes, EmptyBordTextTypes, MAX_DESCRIPTION_LENGHT, FilmModes, SortTypes, EmotionTypes, UserActions, UpdateTypes};
+const KeyboardKeys = {
+  ENTER: 'Enter',
+  ESCAPE: 'Escape',
+  ESC: 'Esc',
+};
+
+export { SectionHeadings, ExtraClassNames, FilmsCounters, FilterTypes, EmptyBordTextTypes, MAX_DESCRIPTION_LENGHT, FilmModes, SortTypes, EmotionTypes, UserActions, UpdateTypes, KeyboardKeys};
