@@ -1,31 +1,28 @@
 import FilmCardView from '../view/film-card-view.js';
 import FilmDetailsView from '../view/film-details-view.js';
 import { render, replace, remove, RenderPosition} from '../framework/render.js';
-import { FilmModes } from '../const.js';
+import { FilmModes, UserActions, UpdateTypes, FilterTypes, KeyboardKeys } from '../const.js';
 
 export default class FilmPresenter {
   #container = null;
   #mainContainer = null;
-  #commentsModel = null;
   #comments = null;
   #filmDetailsComponent = null;
   #filmCardComponent = null;
   #film = null;
   #changeData = null;
   #changeMode = null;
+  #filterType = null;
   #mode = FilmModes.DEFAULT;
-  #detailsViewCondition = {
-    emotion: null,
-    comment: null,
-    scrollPosition: 0
-  };
+  #scrollPosition = 0;
 
-  constructor (container, filmsContainer, commentsModel, changeData, changeMode) {
+  constructor (container, filmsContainer, comments, changeData, changeMode, filterType) {
     this.#container = container;
     this.#mainContainer = filmsContainer;
-    this.#commentsModel = commentsModel;
+    this.#comments = comments;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
+    this.#filterType = filterType;
   }
 
   init = (film) => {
@@ -34,9 +31,10 @@ export default class FilmPresenter {
     const prevFilmCardComponent = this.#filmCardComponent;
     const prevFilmDetailsComponent = this.#filmDetailsComponent;
 
-    this.#comments = [...this.#commentsModel.get(film)];
     this.#filmCardComponent = new FilmCardView(film);
-    this.#setFilmCardClickHandlers();
+
+    this.#filmCardComponent.setOpenPopupButtonClickHandler(this.#renderFilmDetails);
+    this.#filmCardComponent.setControlButtonClickHandler(this.#handleControlButtonClick);
 
     if (prevFilmCardComponent === null) {
       render(this.#filmCardComponent, this.#container);
@@ -49,10 +47,12 @@ export default class FilmPresenter {
 
     if (this.#mode === FilmModes.POPUP) {
       replace(this.#filmCardComponent, prevFilmCardComponent);
-      this.#filmDetailsComponent = new FilmDetailsView(film, this.#comments, this.#detailsViewCondition, this.#updateDetailsViewCondition);
+      this.#filmDetailsComponent = new FilmDetailsView(film, this.#comments);
       this.#setFilmDetailsClickHandlers();
       replace(this.#filmDetailsComponent, prevFilmDetailsComponent);
+      this.#scrollPopupToPosition();
     }
+
     remove(prevFilmCardComponent);
     remove(prevFilmDetailsComponent);
   };
@@ -68,64 +68,85 @@ export default class FilmPresenter {
     }
   };
 
-  #updateDetailsViewCondition = (detailsViewCondition) => {
-    this.#detailsViewCondition = {...detailsViewCondition};
-  };
-
-  #setFilmCardClickHandlers() {
-    this.#filmCardComponent.setOpenPopupButtonClickHandler(this.#renderFilmDetails);
-    this.#filmCardComponent.setWatchlistClickHandler(this.#handlerWatchlistClick);
-    this.#filmCardComponent.setAlreadyWatchedClickHandler(this.#handlerAlreadyWatchedClick);
-    this.#filmCardComponent.setFavoriteClickHandler(this.#handlerFavoriteClick);
-  }
-
-  #setFilmDetailsClickHandlers() {
-    this.#filmDetailsComponent.setCloseButtonClickHandler(this.#removeFilmDetails);
-    this.#filmDetailsComponent.setWatchlistClickHandler(this.#handlerWatchlistClick);
-    this.#filmDetailsComponent.setAlreadyWatchedClickHandler(this.#handlerAlreadyWatchedClick);
-    this.#filmDetailsComponent.setFavoriteClickHandler(this.#handlerFavoriteClick);
-  }
-
-  #renderFilmDetails = (film) => {
+  #renderFilmDetails = () => {
     this.#changeMode();
     this.#mode = FilmModes.POPUP;
 
-    this.#filmDetailsComponent = new FilmDetailsView(film, this.#comments, this.#detailsViewCondition, this.#updateDetailsViewCondition);
-    render(this.#filmDetailsComponent, this.#mainContainer.parentElement, RenderPosition.AFTEREND);
+    this.#filmDetailsComponent = new FilmDetailsView(this.#film, this.#comments);
+
     this.#setFilmDetailsClickHandlers();
 
     document.body.classList.add('hide-overflow');
     document.addEventListener('keydown', this.#onEscapeKey);
+
+    render(this.#filmDetailsComponent, this.#mainContainer.parentElement, RenderPosition.AFTEREND);
+  };
+
+  #setFilmDetailsClickHandlers = () => {
+    this.#filmDetailsComponent.setCloseButtonClickHandler(this.#removeFilmDetails);
+    this.#filmDetailsComponent.setControlButtonClickHandler(this.#handleControlButtonClick);
+    this.#filmDetailsComponent.setCommentAddHandler(this.#handleCommentAddClick);
+    this.#filmDetailsComponent.setCommentDeleteHandler(this.#handleCommentDeleteClick);
   };
 
   #removeFilmDetails = () => {
-    this.#mode = FilmModes.DEFAULT;
-
-    this.#filmDetailsComponent.element.remove();
-    this.#filmDetailsComponent.removeElement();
-
     document.body.classList.remove('hide-overflow');
+    remove(this.#filmDetailsComponent);
     document.removeEventListener('keydown', this.#onEscapeKey);
-    this.#detailsViewCondition = { emotion: null, comment: null, scrollPosition: 0};
   };
 
+  #scrollPopupToPosition () {
+    this.#filmDetailsComponent.element.scrollBy (0, this.#scrollPosition);
+  }
+
   #onEscapeKey = (evt) => {
-    if(evt.key === 'Escape' || evt.key === 'Esc') {
+    if(evt.key === KeyboardKeys.ESCAPE || evt.key === KeyboardKeys.ESC) {
       evt.preventDefault();
       this.#removeFilmDetails();
       document.removeEventListener('keydown', this.#onEscapeKey);
     }
   };
 
-  #handlerWatchlistClick = () => {
-    this.#changeData ({...this.#film, userDetails: {...this.#film.userDetails, watchlist: !this.#film.userDetails.watchlist}});
+  #handleControlButtonClick = (update, buttonName, position) => {
+    this.#scrollPosition = position;
+
+    const updateType = (filterType) => {
+      if (filterType === FilterTypes.ALL || filterType.toLowerCase() !== buttonName) {
+        return UpdateTypes.PATCH;
+      } else {
+        if (this.#mode === FilmModes.POPUP) {
+          this.#removeFilmDetails();
+        }
+        return UpdateTypes.MINOR;
+      }
+    };
+
+    this.#changeData(
+      UserActions.UPDATE_FILM,
+      updateType(this.#filterType),
+      update
+    );
   };
 
-  #handlerAlreadyWatchedClick = () => {
-    this.#changeData ({...this.#film, userDetails: {...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched}});
+  #handleCommentAddClick = (update, comment, position) => {
+    this.#scrollPosition = position;
+
+    this.#changeData(
+      UserActions.ADD_COMMENT,
+      UpdateTypes.PATCH,
+      update,
+      comment
+    );
   };
 
-  #handlerFavoriteClick = () => {
-    this.#changeData ({...this.#film, userDetails: {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite}});
+  #handleCommentDeleteClick = (update, comment, position) => {
+    this.#scrollPosition = position;
+
+    this.#changeData(
+      UserActions.DELETE_COMMENT,
+      UpdateTypes.PATCH,
+      update,
+      comment
+    );
   };
 }

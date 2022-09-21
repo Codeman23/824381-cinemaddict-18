@@ -17,9 +17,17 @@ const FilmsCounters = {
 const MAX_DESCRIPTION_LENGHT = 139;
 
 const FilterTypes = {
+  ALL: 'All',
   WATCHLIST: 'Watchlist',
   HISTORY: 'History',
   FAVORITE: 'Favorite',
+};
+
+const EmptyBordTextTypes = {
+  [FilterTypes.ALL]: 'There are no movies in our database',
+  [FilterTypes.WATCHLIST]: 'There are no movies to watch now',
+  [FilterTypes.HISTORY]: 'There are no watched movies now',
+  [FilterTypes.FAVORITE]: 'There are no favorite movies now',
 };
 
 const FilmModes = {
@@ -40,4 +48,22 @@ const EmotionTypes = {
   ANGRY: 'angry',
 };
 
-export { SectionHeadings, ExtraClassNames, FilmsCounters, FilterTypes, MAX_DESCRIPTION_LENGHT, FilmModes, SortTypes, EmotionTypes};
+const UserActions = {
+  UPDATE_FILM: 'UPDATE_FILM',
+  ADD_COMMENT: 'ADD_COMMENT',
+  DELETE_COMMENT: 'DELETE_COMMENT',
+};
+
+const UpdateTypes = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+const KeyboardKeys = {
+  ENTER: 'Enter',
+  ESCAPE: 'Escape',
+  ESC: 'Esc',
+};
+
+export { SectionHeadings, ExtraClassNames, FilmsCounters, FilterTypes, EmptyBordTextTypes, MAX_DESCRIPTION_LENGHT, FilmModes, SortTypes, EmotionTypes, UserActions, UpdateTypes, KeyboardKeys};

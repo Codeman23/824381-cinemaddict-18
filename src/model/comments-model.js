@@ -1,11 +1,13 @@
+import Observable from '../framework/observable.js';
 import { generateComments } from '../mock/comment-mock';
 
-export default class CommentsModel {
+export default class CommentsModel extends Observable {
   #filmsModel = null;
   #allComments = [];
   #comments = [];
 
   constructor(filmsModel) {
+    super();
     this.#filmsModel = filmsModel;
     this.#generateAllComments();
   }
@@ -14,8 +16,13 @@ export default class CommentsModel {
     this.#allComments = generateComments(this.#filmsModel.get());
   }
 
-  get = (film) => {
-    this.#comments = film.comments.map((commentId) => this.#allComments.find((comment) => comment.id === commentId));
-    return this.#comments;
+  get = () => this.#allComments;
+
+  add = (update) => {
+    this.#comments = [
+      update,
+      ...this.#comments,
+    ];
+    this.#allComments.push(update);
   };
 }

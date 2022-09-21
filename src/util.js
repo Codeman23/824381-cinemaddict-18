@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import {FilterTypes} from './const.js';
+import {FilterTypes, KeyboardKeys} from './const.js';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -58,27 +58,10 @@ const formatMinutesToHoursAndMinutes = (minutes) => dayjs.duration(minutes, 'min
  * Filter navigation counters
  */
 const filters = {
-  [FilterTypes.WATCHLIST] : (items) => items.filter((item) => item.watchlist === true),
-  [FilterTypes.HISTORY] : (items) => items.filter((item) => item.alreadyWatched === true),
-  [FilterTypes.FAVORITE] : (items) => items.filter((item) => item.favorite === true),
-};
-
-/**
- * Function that update film data
- * @param {*} items - films data
- * @param {*} update - new data
- * @returns - updated data
- */
-const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-  if (index === -1) {
-    return items;
-  }
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
+  [FilterTypes.ALL]: (items) => items.slice(),
+  [FilterTypes.WATCHLIST]: (items) => items.filter((item) => item.userDetails.watchlist === true),
+  [FilterTypes.HISTORY]: (items) => items.filter((item) => item.userDetails.alreadyWatched === true),
+  [FilterTypes.FAVORITE]: (items) => items.filter((item) => item.userDetails.favorite === true),
 };
 
 /**
@@ -119,6 +102,33 @@ const sortFilmUp = (filmA, filmB) => {
  */
 const sortRating = (filmA, filmB) => filmB.filmInfo.totalRating - filmA.filmInfo.totalRating;
 
+/**
+ * Function that sort comments
+ * @param {*} film - film data
+ * @param {*} comments - comments data
+ * @returns sorted comments data
+ */
+const sortComments = (film, comments) => {
+  const filmComments = film.comments;
+  const sortedComments = [];
+
+  for (const comment of comments) {
+    filmComments.forEach((item) => {
+      if (comment.id === item) {
+        sortedComments.push(comment);
+      }
+    });
+  }
+  return sortedComments;
+};
+
+/**
+ * Function that determines key press
+ * @param {*} evt - event
+ * @returns - return boolean
+ */
+const pressCtrlEnter = (evt) => evt.key === KeyboardKeys.ENTER && (evt.ctrlKey || evt.metaKey);
+
 export {
   getRandomInteger,
   getRandomValueFromItems,
@@ -127,7 +137,8 @@ export {
   formatValueToYear,
   formatMinutesToHoursAndMinutes,
   filters,
-  updateItem,
+  sortComments,
   sortFilmUp,
   sortRating,
+  pressCtrlEnter
 };

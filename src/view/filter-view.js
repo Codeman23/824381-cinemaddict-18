@@ -1,26 +1,49 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { generateFilters } from '../mock/filter-mock.js';
 
-const createFilterTemplate = (films) => {
-  const allFilters = generateFilters( [...films.get()].map((item) => item.userDetails));
-  /**
-   * Function that named and counted filters
-   * @param {*} navFilters - userDetails data
-   * @returns filters markup
-  */
-  const generateLinks = (navFilters) => navFilters.map((filter) => (`<a href="#${filter.name}" class="main-navigation__item">${filter.name} <span class="main-navigation__item-count">${filter.count}</span></a>`)).join('');
+const createFilterItemTemplate = (filter, currentFilterType) => {
+  const {type, name, count} = filter;
+  return (
+    `<a href="#${type}" class="main-navigation__item ${type === currentFilterType ? 'main-navigation__item--active' : ''}"
+    data-filter-type="${type}">
+      ${name} ${type === 'All' ? '' : `<span class="main-navigation__item-count">${count}</span>`}
+    </a>`
+  );
+};
 
-  return`<nav class="main-navigation"><a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>${generateLinks(allFilters)}</nav>`;};
+const createFilter = (filterItems, currentFilterType) => {
+  const filterItemsTemplate = filterItems
+    .map((filter) => createFilterItemTemplate(filter, currentFilterType))
+    .join('');
+
+  return `<nav class="main-navigation">
+    ${filterItemsTemplate}
+    </nav>`;
+};
 
 export default class FilterView extends AbstractView{
-  #films = null;
+  #filters = null;
+  #currentFilter = null;
 
-  constructor(films) {
+  constructor(filters, currentFilterType) {
     super();
-    this.#films = films;
+    this.#filters = filters;
+    this.#currentFilter = currentFilterType;
   }
 
   get template() {
-    return createFilterTemplate(this.#films);
+    return createFilter(this.#filters, this.#currentFilter);
   }
+
+  setFilterTypeChangeHandler = (callback) => {
+    this._callback.filterTypeChange = callback;
+    this.element.addEventListener('click', this.#filterTypeChangeHandler);
+  };
+
+  #filterTypeChangeHandler = (evt) => {
+    const target = evt.target;
+    if (target.classList.contains('main-navigation__item' ) || target.classList.contains('main-navigation__item-count')) {
+      evt.preventDefault();
+      this._callback.filterTypeChange(target.closest('.main-navigation__item').dataset.filterType);
+    }
+  };
 }
