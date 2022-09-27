@@ -7,26 +7,6 @@ dayjs.extend(duration);
 dayjs.extend(relativeTime);
 
 /**
- * Helper function that returns random number from specified range value
- * @param {*} a - min range value
- * @param {*} b - max range value
- * @returns - random number
- */
-const getRandomInteger = (a = 0, b = 1) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
-
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
-};
-
-/**
- * Helper function that returns random value from items
- * @param {*} items - iterrable collection
- * @returns - random item form items
- */
-const getRandomValueFromItems = (items) => items[getRandomInteger(0, items.length - 1)];
-
-/**
  * Helper function that conver string value like 2022-05-11T00:00:00.000Z to 2022/05/11 03:00
  * @param {*} date - string value
  * @returns - date and time format like 2022/05/11 03:00
@@ -110,8 +90,6 @@ const sortRating = (filmA, filmB) => filmB.filmInfo.totalRating - filmA.filmInfo
 const pressCtrlEnter = (evt) => evt.key === KeyboardKeys.ENTER && (evt.ctrlKey || evt.metaKey);
 
 export {
-  getRandomInteger,
-  getRandomValueFromItems,
   formatValueToDateAndTime,
   formatValueToDate,
   formatValueToYear,
