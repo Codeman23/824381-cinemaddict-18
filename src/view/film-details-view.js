@@ -1,7 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { EmotionTypes } from '../const.js';
-import { sortComments } from '../util.js';
-import { getRandomInteger} from '../util';
+import { EmotionTypes, SHAKE_CLASS_NAME, SHAKE_ANIMATION_TIMEOUT } from '../const.js';
+import { formatValueToDate, formatMinutesToHoursAndMinutes, } from '../util.js';
 import dayjs from 'dayjs';
 import relativeTimePlugin from 'dayjs/plugin/relativeTime';
 import { pressCtrlEnter } from '../util.js';
@@ -15,7 +14,7 @@ const createFilmDetailsTemplate = (film) => {
    * @param {*} genres - genres data
    * @returns genres markup
    */
-  const getGenres = (genres) => genres.split(',').map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
+  const getGenres = (genres) => genres.join().split(',').map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
 
   /**
    * Function that add active class to buttons
@@ -23,6 +22,13 @@ const createFilmDetailsTemplate = (film) => {
    * @returns active class
    */
   const getActive = (isChecked) => isChecked && 'film-details__control-button--active';
+
+  /**
+   * Function that split string and add spaces between points
+   * @param {*} value - value
+   * @returns - string with spaces
+   */
+  const getStringValues = (value) => String(value).split(',').join(', ');
 
   return `
   <section class="film-details">
@@ -53,19 +59,19 @@ const createFilmDetailsTemplate = (film) => {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Writers</td>
-                <td class="film-details__cell">${film.filmInfo.writers}</td>
+                <td class="film-details__cell">${getStringValues(film.filmInfo.writers)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Actors</td>
-                <td class="film-details__cell">${film.filmInfo.actors}</td>
+                <td class="film-details__cell">${getStringValues(film.filmInfo.actors)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Release Date</td>
-                <td class="film-details__cell">${film.filmInfo.release.date}</td>
+                <td class="film-details__cell">${formatValueToDate(film.filmInfo.release.date)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
-                <td class="film-details__cell">${film.filmInfo.runtime}</td>
+                <td class="film-details__cell">${formatMinutesToHoursAndMinutes(film.filmInfo.runtime)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>
@@ -105,8 +111,8 @@ const createFilmDetailsTemplate = (film) => {
                 <p class="film-details__comment-text">${he.encode(comment.comment)}</p>
                 <p class="film-details__comment-info">
                   <span class="film-details__comment-author">${comment.author}</span>
-                  <span class="film-details__comment-day">${comment.date}</span>
-                  <button class="film-details__comment-delete">Delete</button>
+                  <span class="film-details__comment-day"> ${dayjs().to(comment.date)}</span>
+                  <button class="film-details__comment-delete" ${film.isDeleting === comment.id ? 'disabled' : ''}>${film.isDeleting === comment.id ? 'Deleting...' : 'Delete'}</button>
                 </p>
               </div>
               </li>`).join('')}
@@ -144,14 +150,11 @@ const createFilmDetailsTemplate = (film) => {
   </section>`;};
 
 export default class FilmDetailsView extends AbstractStatefulView {
-  #scrollPosition = 0;
 
   constructor(film, comments) {
     super();
-    this._state = FilmDetailsView.convertFilmToState( film, sortComments(film, comments) );
-
+    this._state = FilmDetailsView.convertFilmToState(film, comments);
     this.#setCommentHandlers();
-    this.#setScrollPosition();
   }
 
   get template() {
@@ -163,28 +166,39 @@ export default class FilmDetailsView extends AbstractStatefulView {
 
     this.element.querySelector('.film-details__controls').addEventListener('click', (evt) => {
       evt.preventDefault();
-      const buttonName = evt.target.id;
+
+      if (evt.target.tagName !== 'BUTTON') {
+        return;
+      }
+
+      let update;
 
       switch (evt.target) {
         case this.element.querySelector('.film-details__control-button--watchlist'):
-          this.updateElement({
-            ...this._state, userDetails: { ...this._state.userDetails, watchlist: !this._state.userDetails.watchlist }
-          });
+          update = { ...this._state, userDetails: { ...this._state.userDetails, watchlist: !this._state.userDetails.watchlist }};
           break;
         case this.element.querySelector('.film-details__control-button--watched'):
-          this.updateElement({
-            ...this._state, userDetails: { ...this._state.userDetails, alreadyWatched: !this._state.userDetails.alreadyWatched }
-          });
+          update = { ...this._state, userDetails: { ...this._state.userDetails, alreadyWatched: !this._state.userDetails.alreadyWatched }};
           break;
         case this.element.querySelector('.film-details__control-button--favorite'):
-          this.updateElement({
-            ...this._state, userDetails: { ...this._state.userDetails, favorite: !this._state.userDetails.favorite }
-          });
+          update = { ...this._state, userDetails: { ...this._state.userDetails, favorite: !this._state.userDetails.favorite }};
           break;
       }
 
-      this._callback.controlButtonClick({...FilmDetailsView.convertStateToFilm(this._state)}, buttonName, this.#scrollPosition);
+      this.updateElement({
+        isDisabled: true
+      });
+
+      this._callback.controlButtonClick({...FilmDetailsView.convertStateToFilm(update)});
     });
+  };
+
+  _restoreHandlers = () => {
+    this.#setCommentHandlers();
+    this.setControlButtonClickHandler(this._callback.controlButtonClick);
+    this.setCloseButtonClickHandler(this._callback.closeButtonClick);
+    this.setCommentAddHandler(this._callback.commentFormSubmit);
+    this.setCommentDeleteHandler(this._callback.deleteClick);
   };
 
   setCommentAddHandler = (callback) => {
@@ -197,24 +211,36 @@ export default class FilmDetailsView extends AbstractStatefulView {
     this.element.querySelectorAll('.film-details__comment-delete').forEach((button) => button.addEventListener('click', this.#commentDeleteClickHandler));
   };
 
-  _restoreHandlers = () => {
-    this.#setScrollPosition();
-    this.#setCommentHandlers();
-    this.setControlButtonClickHandler(this._callback.controlButtonClick);
-    this.setCloseButtonClickHandler(this._callback.closeButtonClick);
-    this.setCommentAddHandler(this._callback.commentFormSubmit);
-    this.setCommentDeleteHandler(this._callback.deleteClick);
+  setButtonsShake = (callback) => {
+    this.element.querySelector('.film-details__controls').classList.add(SHAKE_CLASS_NAME);
+
+    setTimeout(() => {
+      this.element.querySelector('.film-details__controls').classList.remove(SHAKE_CLASS_NAME);
+      callback?.();
+    }, SHAKE_ANIMATION_TIMEOUT);
+  };
+
+  setFormShake = (callback) => {
+    this.element.querySelector('.film-details__new-comment').classList.add(SHAKE_CLASS_NAME);
+
+    setTimeout(() => {
+      this.element.querySelector('.film-details__new-comment').classList.remove(SHAKE_CLASS_NAME);
+      callback?.();
+    }, SHAKE_ANIMATION_TIMEOUT);
+  };
+
+  setDeleteButtonShake = (callback) => {
+    this.element.querySelector(`[data-comment-id = "${this._state.isDeleting}"]`).classList.add(SHAKE_CLASS_NAME);
+
+    setTimeout(() => {
+      this.element.querySelector(`[data-comment-id = "${this._state.isDeleting}"]`).classList.remove(SHAKE_CLASS_NAME);
+      callback?.();
+    }, SHAKE_ANIMATION_TIMEOUT);
   };
 
   setCloseButtonClickHandler = (callback) => {
     this._callback.closeButtonClick = callback;
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeButtonClickHandler);
-  };
-
-  #setScrollPosition = () => {
-    this.element.addEventListener ('scroll', () => {
-      this.#scrollPosition = this.element.scrollTop;
-    });
   };
 
   #closeButtonClickHandler = (evt) => {
@@ -223,14 +249,12 @@ export default class FilmDetailsView extends AbstractStatefulView {
   };
 
   #emotionClickHandler = (evt) => {
-    const scrollPosition = this.element.scrollTop;
+    evt.preventDefault();
     const target = evt.currentTarget.dataset.emotion;
 
-    evt.preventDefault();
     this.updateElement({
       checkedEmotion: target
     });
-    this.element.scrollTop = scrollPosition;
   };
 
   #commentInputChangeHandler = (evt) => {
@@ -246,39 +270,41 @@ export default class FilmDetailsView extends AbstractStatefulView {
     if (pressCtrlEnter(evt)) {
       evt.preventDefault();
 
-      const newComment = {
-        id: String(getRandomInteger(60, 80)),
-        author: 'Unknown',
+      const newCommentComponent = {
         comment: evt.target.value,
-        date: dayjs().fromNow(true),
         emotion: this._state.checkedEmotion
       };
 
       this.updateElement({
-        popupComments: [...this._state.popupComments, newComment],
-        description: '',
-        checkedEmotion: false
+        isSaving: true
       });
 
-      const update = {...FilmDetailsView.convertStateToFilm(this._state), comments: [...this._state.comments, newComment.id]};
-      this._callback.commentFormSubmit(update, newComment, this.#scrollPosition);
+      this._callback.commentFormSubmit(this._state.id, newCommentComponent);
     }
   };
 
   #commentDeleteClickHandler = (evt) => {
     evt.preventDefault();
 
-    const currentId = evt.target.closest('.film-details__comment').dataset.commentId;
-    const comment = this._state.popupComments.find((item) => item.id === currentId);
-    const updatedComments = this._state.comments.filter((item) => item !== currentId);
-    const update = {...FilmDetailsView.convertStateToFilm(this._state), comments: updatedComments};
+    const commentId = evt.target.closest('.film-details__comment').dataset.commentId;
 
     this.updateElement({
-      comments: updatedComments,
-      popupComments: this._state.popupComments.filter((item) => item !== comment)
+      isDeleting: commentId
     });
 
-    this._callback.deleteClick(update, comment, this.#scrollPosition);
+    this._callback.deleteClick(commentId);
+
+    // const currentId = evt.target.closest('.film-details__comment').dataset.commentId;
+    // const comment = this._state.popupComments.find((item) => item.id === currentId);
+    // const updatedComments = this._state.comments.filter((item) => item !== currentId);
+    // const update = {...FilmDetailsView.convertStateToFilm(this._state), comments: updatedComments};
+
+    // this.updateElement({
+    //   comments: updatedComments,
+    //   popupComments: this._state.popupComments.filter((item) => item !== comment)
+    // });
+
+    // this._callback.deleteClick(update, comment);
   };
 
   #setCommentHandlers = () => {
@@ -286,7 +312,17 @@ export default class FilmDetailsView extends AbstractStatefulView {
     this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#commentInputChangeHandler);
   };
 
-  static convertFilmToState = (film, popupComments) => ({...film, checkedEmotion: false, description: '', popupComments});
+  static convertFilmToState = (film, popupComments) => (
+    {
+      ...film,
+      popupComments,
+      checkedEmotion: false,
+      description: '',
+      isSaving: false,
+      isDisabled: false,
+      isDeleting: false
+    }
+  );
 
   static convertStateToFilm = (state) => {
     const film = {...state};
@@ -294,6 +330,9 @@ export default class FilmDetailsView extends AbstractStatefulView {
     delete film.checkedEmotion;
     delete film.description;
     delete film.popupComments;
+    delete film.isSaving;
+    delete film.isDisabled;
+    delete film.isDeleting;
 
     return film;
   };

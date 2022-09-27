@@ -53,7 +53,7 @@ export default class FilterPresenter {
     this.#filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
 
     if (prevFilterComponent === null) {
-      render(this.#filterComponent, this.#filterContainer, RenderPosition.AFTERBEGIN);
+      render(this.#filterComponent, this.#filterContainer, RenderPosition.BEFOREBEGIN);
       return;
     }
 
