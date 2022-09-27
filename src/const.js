@@ -80,7 +80,7 @@ const UserStatusGradations = {
   MIN_FAN: 11,
   MAX_FAN: 20,
   MIN_MOVIE_BUFF: 21,
-}
+};
 
 const SHAKE_CLASS_NAME = 'shake';
 
