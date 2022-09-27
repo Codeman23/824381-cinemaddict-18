@@ -67,12 +67,20 @@ const KeyboardKeys = {
   ESC: 'Esc',
 };
 
-const UserStatus = {
+const UserStatuses = {
   NONE: '',
   NOVICE: 'Novice',
   FAN: 'Fan',
   MOVIE_BUFF: 'Movie Buff'
 };
+
+const UserStatusGradations = {
+  MIN_NOVICE: 1,
+  MAX_NOVICE : 10,
+  MIN_FAN: 11,
+  MAX_FAN: 20,
+  MIN_MOVIE_BUFF: 21,
+}
 
 const SHAKE_CLASS_NAME = 'shake';
 
@@ -102,7 +110,8 @@ export { SectionHeadings,
   UpdateTypes,
   KeyboardKeys,
   PopupModes,
-  UserStatus,
+  UserStatuses,
+  UserStatusGradations,
   SHAKE_CLASS_NAME,
   SHAKE_ANIMATION_TIMEOUT,
   UiBlockerTimeLimits,
