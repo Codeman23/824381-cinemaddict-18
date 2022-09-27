@@ -52,7 +52,7 @@ const formatValueToYear = (date) => dayjs(date).format('YYYY');
  * @param {*} minutes - minutes value
  * @returns - hour-and-minutes format like '2h 10m'
  */
-const formatMinutesToHoursAndMinutes = (minutes) => dayjs.duration(minutes, 'minutes').format('H[h] mm[m]');
+const formatMinutesToHoursAndMinutes = (minutes) => minutes > 60 ? dayjs.duration(minutes, 'minutes').format('H[h] mm[m]') : dayjs.duration(minutes, 'minutes').format('mm[m]');
 
 /**
  * Filter navigation counters
@@ -103,26 +103,6 @@ const sortFilmUp = (filmA, filmB) => {
 const sortRating = (filmA, filmB) => filmB.filmInfo.totalRating - filmA.filmInfo.totalRating;
 
 /**
- * Function that sort comments
- * @param {*} film - film data
- * @param {*} comments - comments data
- * @returns sorted comments data
- */
-const sortComments = (film, comments) => {
-  const filmComments = film.comments;
-  const sortedComments = [];
-
-  for (const comment of comments) {
-    filmComments.forEach((item) => {
-      if (comment.id === item) {
-        sortedComments.push(comment);
-      }
-    });
-  }
-  return sortedComments;
-};
-
-/**
  * Function that determines key press
  * @param {*} evt - event
  * @returns - return boolean
@@ -137,7 +117,6 @@ export {
   formatValueToYear,
   formatMinutesToHoursAndMinutes,
   filters,
-  sortComments,
   sortFilmUp,
   sortRating,
   pressCtrlEnter

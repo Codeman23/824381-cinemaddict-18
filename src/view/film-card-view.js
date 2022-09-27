@@ -1,6 +1,7 @@
 import { formatValueToYear } from '../util.js';
 import { MAX_DESCRIPTION_LENGHT } from '../const.js';
-import AbstractView from '../framework/view/abstract-view.js';
+import { formatMinutesToHoursAndMinutes, } from '../util.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 const createFilmCardTemplate = (film) => {
   /**
@@ -25,8 +26,8 @@ const createFilmCardTemplate = (film) => {
     <p class="film-card__rating">${film.filmInfo.totalRating}</p>
     <p class="film-card__info">
       <span class="film-card__year">${formatValueToYear(film.filmInfo.release.date)}</span>
-      <span class="film-card__duration">${film.filmInfo.runtime}</span>
-      <span class="film-card__genre">${film.filmInfo.genre}</span>
+      <span class="film-card__duration">${formatMinutesToHoursAndMinutes(film.filmInfo.runtime)}</span>
+      <span class="film-card__genre">${String(film.filmInfo.genre).split(',').join(', ')}</span>
     </p>
     <img src="${film.filmInfo.poster}" alt="" class="film-card__poster">
     <p class="film-card__description">${showDescription(film.filmInfo.description)}</p>
@@ -43,16 +44,15 @@ const createFilmCardTemplate = (film) => {
 </article>`;
 };
 
-export default class FilmCardView extends AbstractView {
-  #film = null;
+export default class FilmCardView extends AbstractStatefulView {
 
   constructor(film) {
     super();
-    this.#film = film;
+    this._state = FilmCardView.convertFilmToState(film);
   }
 
   get template() {
-    return createFilmCardTemplate(this.#film);
+    return createFilmCardTemplate(this._state);
   }
 
   setOpenPopupButtonClickHandler = (callback) => {
@@ -60,32 +60,52 @@ export default class FilmCardView extends AbstractView {
     this.element.querySelector('a').addEventListener('click', this.#openPopupButtonClickHandler);
   };
 
-  #openPopupButtonClickHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.openPopupClick();
-  };
-
   setControlButtonClickHandler = (callback) => {
     this._callback.controlButtonClick = callback;
 
     this.element.querySelector('.film-card__controls').addEventListener('click', (evt) => {
       evt.preventDefault();
-      const buttonName = evt.target.id;
 
       let update;
       switch (evt.target) {
         case this.element.querySelector('.film-card__controls-item--add-to-watchlist'):
-          update = { ...this.#film, userDetails: {...this.#film.userDetails, watchlist: !this.#film.userDetails.watchlist }};
+          update = { ...FilmCardView.convertStateToFilm(this._state), userDetails: {...this._state.userDetails, watchlist: !this._state.userDetails.watchlist }};
           break;
         case this.element.querySelector('.film-card__controls-item--mark-as-watched'):
-          update = { ...this.#film, userDetails: {...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched }};
+          update = { ...FilmCardView.convertStateToFilm(this._state), userDetails: {...this._state.userDetails, alreadyWatched: !this._state.userDetails.alreadyWatched }};
           break;
         case this.element.querySelector('.film-card__controls-item--favorite'):
-          update = { ...this.#film, userDetails: {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite }};
+          update = { ...FilmCardView.convertStateToFilm(this._state), userDetails: {...this._state.userDetails, favorite: !this._state.userDetails.favorite }};
           break;
       }
 
-      this._callback.controlButtonClick(update, buttonName);
+      this.updateElement({
+        isDisabled: true
+      });
+
+      this._callback.controlButtonClick(update);
     });
+  };
+
+  _restoreHandlers = () => {
+    this.setOpenPopupButtonClickHandler(this._callback.openPopupClick);
+    this.setControlButtonClickHandler(this._callback.controlButtonClick);
+  };
+
+  #openPopupButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.openPopupClick(FilmCardView.convertStateToFilm(this._state));
+  };
+
+  static convertFilmToState = (film) => ({...film,
+    isDisabled: false,
+  });
+
+  static convertStateToFilm = (state) => {
+    const film = {...state};
+
+    delete film.isDisabled;
+
+    return film;
   };
 }

@@ -1,3 +1,4 @@
+
 import AbstractView from './abstract-view.js';
 
 /**
@@ -39,6 +40,7 @@ export default class AbstractStatefulView extends AbstractView {
 
   /** Метод для перерисовки элемента */
   #rerenderElement = () => {
+    const scrollPosition = this.element.scrollTop;
     const prevElement = this.element;
     const parent = prevElement.parentElement;
     this.removeElement();
@@ -46,7 +48,7 @@ export default class AbstractStatefulView extends AbstractView {
     const newElement = this.element;
 
     parent.replaceChild(newElement, prevElement);
-
+    this.element.scrollTop = scrollPosition;
     this._restoreHandlers();
   };
 }

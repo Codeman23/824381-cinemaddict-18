@@ -30,7 +30,7 @@ const EmptyBordTextTypes = {
   [FilterTypes.FAVORITE]: 'There are no favorite movies now',
 };
 
-const FilmModes = {
+const PopupModes = {
   DEFAULT: 'Default',
   POPUP: 'Popup',
 };
@@ -58,6 +58,7 @@ const UpdateTypes = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 const KeyboardKeys = {
@@ -66,4 +67,43 @@ const KeyboardKeys = {
   ESC: 'Esc',
 };
 
-export { SectionHeadings, ExtraClassNames, FilmsCounters, FilterTypes, EmptyBordTextTypes, MAX_DESCRIPTION_LENGHT, FilmModes, SortTypes, EmotionTypes, UserActions, UpdateTypes, KeyboardKeys};
+const UserStatus = {
+  NONE: '',
+  NOVICE: 'Novice',
+  FAN: 'Fan',
+  MOVIE_BUFF: 'Movie Buff'
+};
+
+const SHAKE_CLASS_NAME = 'shake';
+
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
+const UiBlockerTimeLimits = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
+const Methods = {
+  PUT: 'PUT',
+  GET: 'GET',
+  POST: 'POST',
+  DELETE: 'DELETE',
+};
+
+export { SectionHeadings,
+  ExtraClassNames,
+  FilmsCounters,
+  FilterTypes,
+  EmptyBordTextTypes,
+  MAX_DESCRIPTION_LENGHT,
+  SortTypes,
+  EmotionTypes,
+  UserActions,
+  UpdateTypes,
+  KeyboardKeys,
+  PopupModes,
+  UserStatus,
+  SHAKE_CLASS_NAME,
+  SHAKE_ANIMATION_TIMEOUT,
+  UiBlockerTimeLimits,
+  Methods};

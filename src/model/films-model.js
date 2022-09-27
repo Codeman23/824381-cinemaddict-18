@@ -1,24 +1,48 @@
-import Observable from '../framework/observable.js';
-import { generateFilms } from '../mock/film-mock';
+import ObservableModel from '../framework/observable-model.js';
+import {UpdateTypes} from '../const.js';
 
-export default class FilmsModel extends Observable {
-  #films = generateFilms();
+export default class CommentsModel extends ObservableModel {
+  #filmsApiService = null;
+  #films = [];
+
+  constructor(filmsApiService){
+    super();
+    this.#filmsApiService = filmsApiService;
+  }
 
   get = () => this.#films;
 
-  updateFilm = (updateType, update) => {
+  init = async () => {
+    try {
+      const films = await this.#filmsApiService.films;
+      this.#films = films.map(this._adaptFilmToClient);
+    } catch(err) {
+      this.#films = [];
+    }
+
+    this._notify(UpdateTypes.INIT);
+  };
+
+  updateFilm = async (updateType, update) => {
     const index = this.#films.findIndex((film) => film.id === update.id);
 
     if (index === -1) {
-      throw new Error('Can\'t update unexisting task');
+      throw new Error('Can\'t update unexisting film');
     }
 
-    this.#films = [
-      ...this.#films.slice(0, index),
-      update,
-      ...this.#films.slice(index + 1),
-    ];
+    try {
+      const response = await this.#filmsApiService.updateFilm(update);
+      const updatedFilm = this._adaptFilmToClient(response);
 
-    this._notify(updateType, update);
+      this.#films = [
+        ...this.#films.slice(0, index),
+        updatedFilm,
+        ...this.#films.slice(index + 1),
+      ];
+
+      this._notify(updateType, updatedFilm);
+    } catch(err) {
+      throw new Error('Can\'t update film');
+    }
   };
 }
