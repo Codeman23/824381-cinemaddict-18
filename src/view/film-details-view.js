@@ -112,7 +112,7 @@ const createFilmDetailsTemplate = (film) => {
                 <p class="film-details__comment-info">
                   <span class="film-details__comment-author">${comment.author}</span>
                   <span class="film-details__comment-day"> ${dayjs().to(comment.date)}</span>
-                  <button class="film-details__comment-delete">Delete</button>
+                  <button class="film-details__comment-delete" ${film.isDeleting === comment.id ? 'disabled' : ''}>${film.isDeleting === comment.id ? 'Deleting...' : 'Delete'}</button>
                 </p>
               </div>
               </li>`).join('')}
