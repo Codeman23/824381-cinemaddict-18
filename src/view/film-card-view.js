@@ -21,6 +21,7 @@ const createFilmCardTemplate = (film) => {
 
   return `
 <article class="film-card">
+${film.comments.length}
   <a class="film-card__link">
     <h3 class="film-card__title">${film.filmInfo.title}</h3>
     <p class="film-card__rating">${film.filmInfo.totalRating}</p>

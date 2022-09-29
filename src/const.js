@@ -4,11 +4,6 @@ const SectionHeadings = {
   COMMENTED: 'Most commented',
 };
 
-const ExtraClassNames = {
-  FILMS_LIST_EXTRA: 'films-list--extra',
-  VISUALLY_HIDDEN: 'visually-hidden',
-};
-
 const FilmsCounters = {
   MAIN: 5,
   EXTRA: 2,
@@ -99,7 +94,6 @@ const Methods = {
 };
 
 export { SectionHeadings,
-  ExtraClassNames,
   FilmsCounters,
   FilterTypes,
   EmptyBordTextTypes,

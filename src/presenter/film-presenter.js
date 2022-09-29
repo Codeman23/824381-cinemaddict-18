@@ -19,7 +19,7 @@ export default class FilmPresenter {
 
     const prevFilmCardComponent = this.#filmCardComponent;
 
-    this.#filmCardComponent = new FilmCardView(film);
+    this.#filmCardComponent = new FilmCardView(this.#film);
 
     this.#filmCardComponent.setOpenPopupButtonClickHandler(this.#openPopup);
     this.#filmCardComponent.setControlButtonClickHandler(this.#controlButtonChange);

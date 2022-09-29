@@ -221,10 +221,18 @@ export default class FilmDetailsView extends AbstractStatefulView {
   };
 
   setFormShake = (callback) => {
-    this.element.querySelector('.film-details__new-comment').classList.add(SHAKE_CLASS_NAME);
+    const formElement = this.element.querySelector('.film-details__new-comment');
+    const formInputElement = formElement.querySelector('.film-details__comment-input');
+
+    formElement.classList.add(SHAKE_CLASS_NAME);
+    formElement.setAttribute("disabled", "disabled");
+    formInputElement.setAttribute("disabled", "disabled");
 
     setTimeout(() => {
-      this.element.querySelector('.film-details__new-comment').classList.remove(SHAKE_CLASS_NAME);
+      formElement.classList.remove(SHAKE_CLASS_NAME);
+      formElement.removeAttribute("disabled", "disabled");
+      formInputElement.removeAttribute("disabled", "disabled");
+      
       callback?.();
     }, SHAKE_ANIMATION_TIMEOUT);
   };
@@ -293,18 +301,6 @@ export default class FilmDetailsView extends AbstractStatefulView {
     });
 
     this._callback.deleteClick(commentId);
-
-    // const currentId = evt.target.closest('.film-details__comment').dataset.commentId;
-    // const comment = this._state.popupComments.find((item) => item.id === currentId);
-    // const updatedComments = this._state.comments.filter((item) => item !== currentId);
-    // const update = {...FilmDetailsView.convertStateToFilm(this._state), comments: updatedComments};
-
-    // this.updateElement({
-    //   comments: updatedComments,
-    //   popupComments: this._state.popupComments.filter((item) => item !== comment)
-    // });
-
-    // this._callback.deleteClick(update, comment);
   };
 
   #setCommentHandlers = () => {
