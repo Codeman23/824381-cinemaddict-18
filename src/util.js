@@ -83,6 +83,17 @@ const sortFilmUp = (filmA, filmB) => {
 const sortRating = (filmA, filmB) => filmB.filmInfo.totalRating - filmA.filmInfo.totalRating;
 
 /**
+ * Function that sorts a films by coments length
+ * @param {*} filmA - film comments data
+ * @param {*} filmB - film comments data
+ * @returns sorted films by comments
+ */
+const sortComments = (filmA, filmB) => {
+  const filmWithNoData = getFilmWithNoData(filmA.comments.length, filmB.comments.length);
+  return filmWithNoData ?? dayjs(filmB.comments.length).diff(dayjs(filmA.comments.length));
+};
+
+/**
  * Function that determines key press
  * @param {*} evt - event
  * @returns - return boolean
@@ -97,5 +108,6 @@ export {
   filters,
   sortFilmUp,
   sortRating,
+  sortComments,
   pressCtrlEnter
 };
