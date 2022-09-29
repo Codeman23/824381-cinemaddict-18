@@ -115,7 +115,9 @@ export default class FilmsPresenter {
         break;
       case UserActions.ADD_COMMENT:
         try {
+          console.log(update);
           await this.#commentsModel.addComment(updateType, update, comment);
+          await this.#filmsModel.updateFilm(updateType, update);
           this.#popupComponent.setPopupUpdate(actionType);
         } catch(err) {
           this.#popupComponent.setAborting(actionType);

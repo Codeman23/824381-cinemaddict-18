@@ -287,7 +287,7 @@ export default class FilmDetailsView extends AbstractStatefulView {
         isSaving: true
       });
 
-      this._callback.commentFormSubmit(this._state.id, newCommentComponent);
+      this._callback.commentFormSubmit({...FilmDetailsView.convertStateToFilm(this._state)}, newCommentComponent);
     }
   };
 
