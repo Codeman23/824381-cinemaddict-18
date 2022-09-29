@@ -38,7 +38,7 @@ export default class FilmsPresenter {
   #showMoreButtonComponent = new ButtonMoreView();
   #renderFilmCount = FilmsCounters.MAIN;
   #addedFilmsPresenter = new Map();
-  #topRatedPresenter  = new Map();
+  #topRatedPresenter = new Map();
   #mostCommentedPresenter = new Map();
   #filterType = FilterTypes.ALL;
   #currentSortType = SortTypes.DEFAULT;
@@ -115,7 +115,6 @@ export default class FilmsPresenter {
         break;
       case UserActions.ADD_COMMENT:
         try {
-          console.log(update);
           await this.#commentsModel.addComment(updateType, update, comment);
           await this.#filmsModel.updateFilm(updateType, update);
           this.#popupComponent.setPopupUpdate(actionType);
@@ -225,7 +224,7 @@ export default class FilmsPresenter {
     }
 
     if (filmCount === 0) {
-      this.#renderFilmCount = PER_STEP_FILM_COUNT;
+      this.#renderFilmCount = FilmsCounters.MAIN;
     }
 
     if (resetSortType) {

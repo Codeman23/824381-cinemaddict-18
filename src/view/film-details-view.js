@@ -225,14 +225,13 @@ export default class FilmDetailsView extends AbstractStatefulView {
     const formInputElement = formElement.querySelector('.film-details__comment-input');
 
     formElement.classList.add(SHAKE_CLASS_NAME);
-    formElement.setAttribute("disabled", "disabled");
-    formInputElement.setAttribute("disabled", "disabled");
+    formElement.setAttribute('disabled', 'disabled');
+    formInputElement.setAttribute('disabled', 'disabled');
 
     setTimeout(() => {
       formElement.classList.remove(SHAKE_CLASS_NAME);
-      formElement.removeAttribute("disabled", "disabled");
-      formInputElement.removeAttribute("disabled", "disabled");
-      
+      formElement.removeAttribute('disabled', 'disabled');
+      formInputElement.removeAttribute('disabled', 'disabled');
       callback?.();
     }, SHAKE_ANIMATION_TIMEOUT);
   };
