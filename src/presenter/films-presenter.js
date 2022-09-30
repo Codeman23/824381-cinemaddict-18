@@ -212,6 +212,11 @@ export default class FilmsPresenter {
     remove(this.#sortComponent);
     remove(this.#showMoreButtonComponent);
     remove(this.#footerStatisticsComponent);
+    remove(this.#mainListComponent);
+    remove(this.#mostCommentedContainer);
+    remove(this.#commentedListContainerComponent);
+    remove(this.#topRatedContainer);
+    remove(this.#ratedListContainerComponent);
 
     if (this.#filmListEmptyComponent) {
       remove(this.#filmListEmptyComponent);
@@ -324,25 +329,30 @@ export default class FilmsPresenter {
   };
 
   #renderFilmsBoard = () => {
+    const films = this.films;
     const filmCount = this.films.length;
 
-    render(this.#filmsComponent, this.#filmsContainer);
-    render(this.#mainListComponent, this.#filmsComponent.element);
-    render(this.#mainListContainerComponent, this.#mainListComponent.element);
-
     if (this.#isLoading) {
+      render(this.#filmsComponent, this.#filmsContainer);
+      render(this.#mainListComponent, this.#filmsComponent.element);
       this.#renderLoading();
       return;
     }
+
+    this.#renderFooterStatistics();
 
     if (filmCount === 0) {
       this.#renderFilmsListEmpty();
       return;
     }
 
+    render(this.#filmsComponent, this.#filmsContainer);
+    render(this.#mainListComponent, this.#filmsComponent.element);
+    render(this.#mainListContainerComponent, this.#mainListComponent.element);
+
     this.#renderHeaderProfile();
     this.#renderSort();
-    this.#renderFilmCards(this.films.slice(0, Math.min(filmCount, this.#renderFilmCount)), this.#mainListContainerComponent.element);
+    this.#renderFilmCards(films.slice(0, Math.min(filmCount, this.#renderFilmCount)), this.#mainListContainerComponent.element);
 
     if (filmCount > this.#renderFilmCount) {
       this.#renderShowMoreButton();
@@ -350,6 +360,5 @@ export default class FilmsPresenter {
 
     this.#renderTopFilmList();
     this.#renderMostCommentedFilms();
-    this.#renderFooterStatistics();
   };
 }

@@ -93,6 +93,8 @@ const Methods = {
   DELETE: 'DELETE',
 };
 
+const MIN_GENRES_COUNTER = 1;
+
 export { SectionHeadings,
   FilmsCounters,
   FilterTypes,
@@ -109,4 +111,6 @@ export { SectionHeadings,
   SHAKE_CLASS_NAME,
   SHAKE_ANIMATION_TIMEOUT,
   UiBlockerTimeLimits,
-  Methods};
+  Methods,
+  MIN_GENRES_COUNTER
+};
