@@ -331,7 +331,7 @@ export default class FilmsPresenter {
   #renderFilmsBoard = () => {
     const films = this.films;
     const filmCount = this.films.length;
-  
+
     if (this.#isLoading) {
       render(this.#filmsComponent, this.#filmsContainer);
       render(this.#mainListComponent, this.#filmsComponent.element);
