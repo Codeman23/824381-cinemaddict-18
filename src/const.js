@@ -9,7 +9,7 @@ const FilmsCounters = {
   EXTRA: 2,
 };
 
-const MAX_DESCRIPTION_LENGHT = 139;
+const MAX_DESCRIPTION_LENGTH = 139;
 
 const FilterTypes = {
   ALL: 'All',
@@ -99,7 +99,7 @@ export { SectionHeadings,
   FilmsCounters,
   FilterTypes,
   EmptyBordTextTypes,
-  MAX_DESCRIPTION_LENGHT,
+  MAX_DESCRIPTION_LENGTH,
   SortTypes,
   EmotionTypes,
   UserActions,

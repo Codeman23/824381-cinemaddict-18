@@ -1,5 +1,5 @@
 import { formatValueToYear } from '../util.js';
-import { MAX_DESCRIPTION_LENGHT } from '../const.js';
+import { MAX_DESCRIPTION_LENGTH } from '../const.js';
 import { formatMinutesToHoursAndMinutes, } from '../util.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
@@ -10,7 +10,7 @@ const createFilmCardTemplate = (film) => {
    * @returns cutted or uncuted text value
    */
   const showDescription = (description) =>
-    description.length > MAX_DESCRIPTION_LENGHT ? `${description.slice(0, MAX_DESCRIPTION_LENGHT)} ...` : description;
+    description.length > MAX_DESCRIPTION_LENGTH ? `${description.slice(0, MAX_DESCRIPTION_LENGTH)} ...` : description;
 
   /**
    * Function that add active class to buttons
