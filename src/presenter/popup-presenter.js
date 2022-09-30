@@ -35,7 +35,7 @@ export default class PopupPresenter {
     this.#filmDetailsComponent.setCommentAddHandler(this.#handleCommentAddClick);
     this.#filmDetailsComponent.setCommentDeleteHandler(this.#handleCommentDeleteClick);
 
-    document.body.classList.add('hide-overflow');
+    this.#mainContainer.classList.add('hide-overflow');
     document.addEventListener('keydown', this.#onEscapeKey);
 
     if (prevFilmDetailsComponent === null) {
@@ -131,7 +131,7 @@ export default class PopupPresenter {
   };
 
   #removeFilmDetails = () => {
-    document.body.classList.remove('hide-overflow');
+    this.#mainContainer.classList.remove('hide-overflow');
     remove(this.#filmDetailsComponent);
     document.removeEventListener('keydown', this.#onEscapeKey);
   };

@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { EmotionTypes, SHAKE_CLASS_NAME, SHAKE_ANIMATION_TIMEOUT } from '../const.js';
+import { EmotionTypes, SHAKE_CLASS_NAME, SHAKE_ANIMATION_TIMEOUT, MIN_GENRES_COUNTER } from '../const.js';
 import { formatValueToDate, formatMinutesToHoursAndMinutes, } from '../util.js';
 import dayjs from 'dayjs';
 import relativeTimePlugin from 'dayjs/plugin/relativeTime';
@@ -78,7 +78,7 @@ const createFilmDetailsTemplate = (film) => {
                 <td class="film-details__cell">${film.filmInfo.release.releaseCountry}</td>
               </tr>
               <tr class="film-details__row">
-                <td class="film-details__term">Genres</td>
+                <td class="film-details__term">${film.filmInfo.genre.length > MIN_GENRES_COUNTER ? 'Genres' : 'Genre'}</td>
                 <td class="film-details__cell">
                 ${getGenres(film.filmInfo.genre)}
               </tr>
