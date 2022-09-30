@@ -7,13 +7,6 @@ dayjs.extend(duration);
 dayjs.extend(relativeTime);
 
 /**
- * Helper function that conver string value like 2022-05-11T00:00:00.000Z to 2022/05/11 03:00
- * @param {*} date - string value
- * @returns - date and time format like 2022/05/11 03:00
- */
-const formatValueToDateAndTime = (date) => dayjs(date).format('YYYY/MM/DD hh:mm');
-
-/**
  * Helper function that convert string value 2022-05-11 to 11 May 2022
  * @param {*} date - string value
  * @returns - date format like 11 May 2022
@@ -101,7 +94,6 @@ const sortComments = (filmA, filmB) => {
 const pressCtrlEnter = (evt) => evt.key === KeyboardKeys.ENTER && (evt.ctrlKey || evt.metaKey);
 
 export {
-  formatValueToDateAndTime,
   formatValueToDate,
   formatValueToYear,
   formatMinutesToHoursAndMinutes,
